@@ -1,0 +1,20 @@
+{
+  "name": "project1-bildy-app",
+  "version": "1.0.0",
+  "description": "desarrollo del backend de una API REST con Node.js y Express para la gestión de albaranes de obra",
+  "license": "ISC",
+  "author": "wen",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "node --watch --env-file .env src/app.js",
+    "start": "node --env-file .env src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.2.3",
+    "multer": "^2.1.0",
+    "zod": "^4.3.6"
+  }
+}
