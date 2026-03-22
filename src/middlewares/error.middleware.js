@@ -9,7 +9,7 @@ export const notFound = (req, res) => {
 }
 
 // Errores globales
-export const errorHandler = (err, req, res) => {
+export const errorHandler = (err, req, res, next) => {
     console.error('❌ Error:', err.message)
 
     // Error de validación de Mongoose

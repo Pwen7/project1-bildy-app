@@ -25,11 +25,11 @@ const companySchema = new mongoose.Schema({
         default: null
     },
     isFreelance: {
-        type: Boolrean,
+        type: Boolean,
         default: false
     },
     deleted: {
-        type: Boolrean,
+        type: Boolean,
         default: false
     }
 }, {
@@ -37,5 +37,5 @@ const companySchema = new mongoose.Schema({
     versionKey: false
 })
 
-const Company = mongoose.model('User', companySchema)
+const Company = mongoose.model('Company', companySchema)
 export default Company

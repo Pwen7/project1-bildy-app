@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
         required: [true, 'User name is required'],
         trim: true
     },
-    lastname: {
+    lastName: {
         type: String,
         required: [true, 'User lastname is required'],
         trim: true
@@ -76,7 +76,7 @@ const userSchema = new mongoose.Schema({
 
 // Virtual fullName
 userSchema.virtual('fullName').get(function () {
-    return `${this.name} ${this.lastName}`
+    return `${this.name || ''} ${this.lastName || ''}`.trim()
 })
 
 

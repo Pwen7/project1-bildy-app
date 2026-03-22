@@ -1,7 +1,7 @@
 import express from 'express'
 import routes from './routes/index.js'
 import { errorHandler, notFound } from './middlewares/error.middleware.js'
-import { logger } from './middlewares/logger.js'
+import { logger } from './middlewares/logger.middleware.js'
 
 const app = express()
 
