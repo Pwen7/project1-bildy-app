@@ -10,7 +10,7 @@ const companySchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        required: [true, 'A company name is required'],
+        required: [true, 'Company name is required'],
         trim: true
     },
     cif: {

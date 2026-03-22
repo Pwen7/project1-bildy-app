@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 const addressSchema = new mongoose.Schema({
     street: {
         type: String,
+        required: [true, 'Street is required'],
         trim: true
     },
     number: {
@@ -15,10 +16,12 @@ const addressSchema = new mongoose.Schema({
     },
     city: {
         type: String,
+        required: [true, 'City is required'],
         trim: true
     },
     province: {
         type: String,
+        required: [true, 'Province is required'],
         trim: true
     }
 }, { _id: false })

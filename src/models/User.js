@@ -18,14 +18,17 @@ const userSchema = new mongoose.Schema({
     },
     name: {
         type: String,
+        required: [true, 'User name is required'],
         trim: true
     },
     lastname: {
         type: String,
+        required: [true, 'User lastname is required'],
         trim: true
     },
     nif: {
         type: String,
+        required: [true, 'NIF is required'],
         trim: true,
         uppercase: true
     },
@@ -73,9 +76,9 @@ const userSchema = new mongoose.Schema({
 
 // Virtual fullName
 userSchema.virtual('fullName').get(function () {
-    if (this.name && this.lastName) return `${this.name} ${this.lastName}`
-    return this.name || ''
+    return `${this.name} ${this.lastName}`
 })
+
 
 userSchema.index({ email: 1 }, { unique: true })
 userSchema.index({ company: 1 })
