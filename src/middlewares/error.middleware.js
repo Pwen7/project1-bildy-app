@@ -17,7 +17,7 @@ export const errorHandler = (err, req, res, next) => {
         const messages = Object.values(err.errors).map(e => e.message)
         return res.status(400).json({
             error: true,
-            message: 'Error de validación',
+            message: 'Mongoose validation error',
             details: messages
         })
     }
@@ -26,16 +26,16 @@ export const errorHandler = (err, req, res, next) => {
     if (err instanceof mongoose.Error.CastError) {
         return res.status(400).json({
             error: true,
-            message: `Valor inválido para '${err.path}'`
+            message: `Invalid value for'${err.path}'`
         })
     }
 
     // Error de duplicado
     if (err.code === 11000) {
-        const field = Object.keys(err.keyValue || {})[0] || 'campo'
+        const field = Object.keys(err.keyValue || {})[0] || 'field'
         return res.status(409).json({
             error: true,
-            message: `Ya existe un registro con ese '${field}'`
+            message: `The record already exists '${field}'`
         })
     }
 
@@ -43,7 +43,7 @@ export const errorHandler = (err, req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({
             error: true,
-            message: 'El archivo excede el tamaño máximo (10MB)'
+            message: 'The file exceeds the maximum size (10MB)'
         })
     }
 
@@ -51,7 +51,7 @@ export const errorHandler = (err, req, res, next) => {
     if (err.code === 'LIMIT_FILE_COUNT') {
         return res.status(400).json({
             error: true,
-            message: 'Se excedió el número máximo de archivos'
+            message: 'The maximum file number was exceeded'
         })
     }
 
@@ -63,14 +63,22 @@ export const errorHandler = (err, req, res, next) => {
         }))
         return res.status(400).json({
             error: true,
-            message: 'Error de validación',
+            message: 'Zod validation error',
             details: errors
+        })
+    }
+
+    // AppError
+    if (err.isOperational) {
+        return res.status(err.statusCode).json({
+            error: true,
+            message: err.message
         })
     }
 
     // Error genérico
     res.status(err.status || 500).json({
         error: true,
-        message: err.message || 'Error interno del servidor'
+        message: err.message || 'Internal server error'
     })
 }
