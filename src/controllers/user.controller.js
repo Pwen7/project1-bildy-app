@@ -102,7 +102,7 @@ export const loginUser = async (req, res, next) => {
             return next(AppError.unauthorized('Invalid user'))
         }
 
-        const validPassword = await compare(password, user.password)
+        const validPassword = await comparePassword(password, user.password)
         if (!validPassword) {
             return next(AppError.unauthorized('Invalid credentials'))
         }
@@ -189,7 +189,7 @@ export const upsertCompany = async (req, res, next) => {
 
         const company = await Company.create(companyData)
 
-        await User.findByIdAndUpdate(currentUser._id, { company: company._id, role })
+        await User.findByIdAndUpdate(user._id, { company: company._id, role })
 
         res.status(201).json({
             error: false,
@@ -212,7 +212,7 @@ export const uploadLogo = async (req, res, next) => {
             return next(AppError.badRequest('User has no company'))
         }
 
-        const logoUrl = `/uploads/${req.file.fileName}`
+        const logoUrl = `/uploads/${req.file.filename}`
         await Company.findByIdAndUpdate(user.company, { logo: logoUrl })
 
         res.json({
@@ -252,7 +252,7 @@ export const refreshToken = async (req, res, next) => {
             return next(AppError.unauthorized('Invalid or expired refresh token'))
         }
 
-        const user = User.findById(decoded._id).select('+refreshToken')
+        const user = await User.findById(decoded._id).select('+refreshToken')
 
         if (!user || user.deleted || user.refreshToken !== token) {
             return next(AppError.unauthorized('Refresh token not recognized'))
@@ -263,10 +263,9 @@ export const refreshToken = async (req, res, next) => {
         await user.save()
 
         res.json({
-            error: true,
+            error: false,
             data: tokens
-        }
-        )
+        })
     } catch (error) {
         next(error)
     }
@@ -296,6 +295,77 @@ export const deleteUser = async (req, res, next) => {
         res.json({
             error: false,
             message: soft ? 'User soft-deleted' : 'User permanently deleted'
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// 9. PUT /api/user/password
+export const changePassword = async (req, res, next) => {
+    try {
+        const { currentPassword, newPassword } = req.body
+        const user = await User.findById(req.user._id).select('+password')
+        const valid = await comparePassword(currentPassword, user.password)
+
+        if (!valid) {
+            return next(AppError.unauthorized('Password is incorrect'))
+        }
+
+        user.password = await hashPassword(newPassword)
+        await user.save()
+
+        res.json({
+            error: false,
+            message: 'Password updated successfully'
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// 10. POST /api/user/invite
+export const inviteUser = async (req, res, next) => {
+    try {
+        const { email, name, lastName, password } = req.body
+        const inviter = req.user
+
+        if (!inviter.company) {
+            return next(AppError.badRequest('You must have a company to invite users'))
+        }
+
+        const existing = await User.findOne({ email })
+        if (existing) {
+            return next(AppError.conflict('Email already registered'))
+        }
+
+        const hashedPassword = await hashPassword(password)
+        const verificationCode = generateVerificationCode()
+
+        const newUser = await User.create({
+            email,
+            name,
+            lastName,
+            password: hashedPassword,
+            verificationCode,
+            verificationAttempts: 3,
+            company: inviter.company,
+            role: 'guest'
+        })
+
+        notificationService.emit('user:invited', {
+            invited: newUser.email,
+            inter: inviter.email
+        })
+
+        res.status(201).json({
+            error: false,
+            data: {
+                user: {
+                    email: newUser.email,
+                    role: newUser.role
+                }
+            }
         })
     } catch (error) {
         next(error)
