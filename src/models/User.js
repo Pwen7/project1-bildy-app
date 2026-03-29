@@ -18,17 +18,14 @@ const userSchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        required: [true, 'User name is required'],
         trim: true
     },
     lastName: {
         type: String,
-        required: [true, 'User lastname is required'],
         trim: true
     },
     nif: {
         type: String,
-        required: [true, 'NIF is required'],
         trim: true,
         uppercase: true
     },
