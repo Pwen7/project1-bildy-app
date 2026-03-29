@@ -165,7 +165,7 @@ export const upsertCompany = async (req, res, next) => {
             const { name, cif, address } = req.body
             const existingCompany = await Company.findOne({ cif, deleted: false })
 
-            // Company exists-> user joins as 'guest'
+            // Company exists -> user joins as 'guest'
             if (existingCompany) {
                 await User.findByIdAndUpdate(
                     user._id,
@@ -191,7 +191,112 @@ export const upsertCompany = async (req, res, next) => {
 
         await User.findByIdAndUpdate(currentUser._id, { company: company._id, role })
 
-        res.status(201).json({ error: false, data: { company } })
+        res.status(201).json({
+            error: false,
+            data: { company }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// 5. PATCH /api/user/logo
+export const uploadLogo = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return next(AppError.badRequest('No file uploaded'))
+        }
+
+        const user = await User.findById(req.user._id)
+        if (!user.company) {
+            return next(AppError.badRequest('User has no company'))
+        }
+
+        const logoUrl = `/uploads/${req.file.fileName}`
+        await Company.findByIdAndUpdate(user.company, { logo: logoUrl })
+
+        res.json({
+            error: false,
+            data: { logo: logoUrl }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// 6. GET /api/user
+export const getUser = async (req, res, next) => {
+    try {
+        // Populate: add associated company data
+        const user = await User.findById(req.user._id)
+            .populate('company')
+
+        res.json({
+            error: false,
+            data: { user }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// 7.1. POST /api/user/refresh
+export const refreshToken = async (req, res, next) => {
+    try {
+        const { refreshToken: token } = req.body
+
+        let decoded
+        try {
+            decoded = verifyRefreshToken(token)
+        } catch {
+            return next(AppError.unauthorized('Invalid or expired refresh token'))
+        }
+
+        const user = User.findById(decoded._id).select('+refreshToken')
+
+        if (!user || user.deleted || user.refreshToken !== token) {
+            return next(AppError.unauthorized('Refresh token not recognized'))
+        }
+
+        const tokens = buildTokenResponse(user)
+        user.refreshToken = tokens.refreshToken
+        await user.save()
+
+        res.json({
+            error: true,
+            data: tokens
+        }
+        )
+    } catch (error) {
+        next(error)
+    }
+}
+
+// 7.2. POST /api/user/logout
+export const logoutUser = async (req, res, next) => {
+    try {
+        await User.findByIdAndUpdate(req.user._id, { refreshToken: null })
+        res.json({ error: false, message: 'Logged out successfully' })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// 8. DELETE /api/user
+export const deleteUser = async (req, res, next) => {
+    try {
+        const soft = req.query.soft === 'true'
+
+        if (soft) {
+            await User.findByIdAndUpdate(req.user._id, { deleted: true })
+        } else {
+            await User.findByIdAndDelete(req.user._id)
+        }
+
+        res.json({
+            error: false,
+            message: soft ? 'User soft-deleted' : 'User permanently deleted'
+        })
     } catch (error) {
         next(error)
     }
