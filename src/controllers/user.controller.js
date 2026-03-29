@@ -363,7 +363,7 @@ export const inviteUser = async (req, res, next) => {
             data: {
                 user: {
                     email: newUser.email,
-                    role: newUser.role
+                    role: inviter.role
                 }
             }
         })

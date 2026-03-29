@@ -19,7 +19,7 @@ export const loginSchema = z.object({
 
 export const personalDataSchema = z.object({
     name: z.string().trim().min(1, 'Name is required'),
-    lastname: z.string().trim().min(1, 'Lastname is required'),
+    lastName: z.string().trim().min(1, 'Lastname is required'),
     nif: z.string().trim().min(1, 'NIF is required').toUpperCase(),
 })
 
@@ -43,6 +43,6 @@ export const changePasswordSchema = z
 export const inviteSchema = z.object({
     email: emailField,
     name: z.string().trim().min(1, 'Name is required'),
-    lastname: z.string().trim().min(1, 'Lastname is required'),
+    lastName: z.string().trim().min(1, 'Lastname is required'),
     password: passwordField,
 })
