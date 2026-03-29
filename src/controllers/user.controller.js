@@ -1,4 +1,4 @@
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util.js'
+import { generateAccessToken, generateRefreshToken, verifyAccessToken } from '../utils/jwt.util.js'
 import User from '../models/User.js'
 import Company from '../models/Company.js'
 import AppError from '../utils/AppError.js'
@@ -247,7 +247,7 @@ export const refreshToken = async (req, res, next) => {
 
         let decoded
         try {
-            decoded = verifyRefreshToken(token)
+            decoded = verifyAccessToken(token)
         } catch {
             return next(AppError.unauthorized('Invalid or expired refresh token'))
         }
