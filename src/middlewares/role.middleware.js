@@ -7,7 +7,7 @@ const checkRole = (roles) => (req, res, next) => {
     }
 
     if (!roles.includes(req.user.role)) {
-        return next(AppError.unauthorized('Your role does not have permission to perform this action'))
+        return next(AppError.forbidden('Your role does not have permission to perform this action'))
     }
 
     next()

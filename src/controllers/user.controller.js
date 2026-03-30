@@ -1,4 +1,4 @@
-import { generateAccessToken, generateRefreshToken, verifyAccessToken } from '../utils/jwt.util.js'
+import { generateAccessToken, generateRefreshToken } from '../utils/jwt.util.js'
 import User from '../models/User.js'
 import Company from '../models/Company.js'
 import AppError from '../utils/AppError.js'
@@ -132,7 +132,7 @@ export const updateUserData = async (req, res, next) => {
         const user = await User.findByIdAndUpdate(
             req.user._id,
             { name, lastName, nif },
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         )
 
         res.json({
@@ -245,26 +245,27 @@ export const refreshToken = async (req, res, next) => {
     try {
         const { refreshToken: token } = req.body
 
-        let decoded
-        try {
-            decoded = verifyAccessToken(token)
-        } catch {
+        const user = await User.findOne({
+            refreshToken: token,
+            deleted: false
+        }).select('+refreshToken')
+
+        if (!user) {
             return next(AppError.unauthorized('Invalid or expired refresh token'))
         }
 
-        const user = await User.findById(decoded._id).select('+refreshToken')
+        const newAccessToken = generateAccessToken(user)
+        const newRefreshToken = generateRefreshToken()
 
-        if (!user || user.deleted || user.refreshToken !== token) {
-            return next(AppError.unauthorized('Refresh token not recognized'))
-        }
-
-        const tokens = buildTokenResponse(user)
-        user.refreshToken = tokens.refreshToken
+        user.refreshToken = newRefreshToken
         await user.save()
 
         res.json({
             error: false,
-            data: tokens
+            data: {
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken
+            }
         })
     } catch (error) {
         next(error)
@@ -275,7 +276,10 @@ export const refreshToken = async (req, res, next) => {
 export const logoutUser = async (req, res, next) => {
     try {
         await User.findByIdAndUpdate(req.user._id, { refreshToken: null })
-        res.json({ error: false, message: 'Logged out successfully' })
+        res.json({
+            error: false,
+            message: 'Logged out successfully'
+        })
     } catch (error) {
         next(error)
     }
@@ -291,6 +295,8 @@ export const deleteUser = async (req, res, next) => {
         } else {
             await User.findByIdAndDelete(req.user._id)
         }
+
+        notificationService.emit('user:deleted', req.user)
 
         res.json({
             error: false,
@@ -355,7 +361,7 @@ export const inviteUser = async (req, res, next) => {
 
         notificationService.emit('user:invited', {
             invited: newUser.email,
-            inter: inviter.email
+            invitedBy: inviter.email
         })
 
         res.status(201).json({
@@ -363,7 +369,7 @@ export const inviteUser = async (req, res, next) => {
             data: {
                 user: {
                     email: newUser.email,
-                    role: inviter.role
+                    role: newUser.role
                 }
             }
         })

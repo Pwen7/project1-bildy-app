@@ -6,19 +6,19 @@ const notificationService = new NotificationService()
 
 // Listeners
 notificationService.on('user:registered', (user) => {
-    console.log(`[EVENT] user:registered - ${user.email}`)
+    console.log(`[EVENT] 📝  user:registered - ${user.email}`)
 })
 
 notificationService.on('user:verified', (user) => {
-    console.log(`[EVENT] user:verified - ${user.email}`)
+    console.log(`[EVENT] ☑️  user:verified - ${user.email}`)
 })
 
-notificationService.on('user:invited', (user) => {
-    console.log(`[EVENT] user:invited - ${user.email}`)
+notificationService.on('user:invited', (users) => {
+    console.log(`[EVENT] 📩  user:invited - ${users.invited} by ${users.invitedBy}`)
 })
 
 notificationService.on('user:deleted', (user) => {
-    console.log(`[EVENT] user:deleted - ${user.email}`)
+    console.log(`[EVENT] 🗑️  user:deleted - ${user.email}`)
 })
 
 export default notificationService

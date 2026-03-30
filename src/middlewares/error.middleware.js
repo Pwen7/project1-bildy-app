@@ -43,7 +43,7 @@ export const errorHandler = (err, req, res, next) => {
     if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({
             error: true,
-            message: 'The file exceeds the maximum size (10MB)'
+            message: 'The file exceeds the maximum size (5MB)'
         })
     }
 
@@ -57,7 +57,7 @@ export const errorHandler = (err, req, res, next) => {
 
     // Error de Zod
     if (err.name === 'ZodError') {
-        const errors = err.errors.map(e => ({
+        const errors = err.issues.map(e => ({
             field: e.path.join('.'),
             message: e.message
         }))

@@ -76,11 +76,5 @@ userSchema.virtual('fullName').get(function () {
     return `${this.name || ''} ${this.lastName || ''}`.trim()
 })
 
-
-userSchema.index({ email: 1 }, { unique: true })
-userSchema.index({ company: 1 })
-userSchema.index({ status: 1 })
-userSchema.index({ role: 1 })
-
 const User = mongoose.model('User', userSchema)
 export default User
