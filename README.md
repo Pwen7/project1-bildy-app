@@ -1,8 +1,15 @@
-# Gestión de Usuarios — BildyApp
+# Gestión de Usuarios – BildyApp
 
 ## 🧰 General requirements
 - Node.js 22+
-- MongoDB Atlas account
+- MongoDB Atlas account.
+
+---
+
+## ▶️ Use
+1. Rename `.env.example` to `.env` and configure.
+2. Create folder `project1-bildy-app/uploads/`
+3. Install dependencies and run.
 
 ---
 
@@ -53,3 +60,42 @@
     └── README.md
 ```
 
+---
+
+## 📍 API endpoints
+Base URL: `http://localhost:3000/api/user`
+
+
+### Public
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/register` | Register a new user |
+| POST | `/login` | Login |
+| POST | `/refresh` | Refresh access token |
+
+
+### Requires JWT
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| PUT | `/validation` | Verify email with 6-digit code |
+| PUT | `/register` | Update personal data (name, lastName, NIF) |
+| PATCH | `/company` | Create or join a company |
+| PATCH | `/logo` | Upload company logo |
+| GET | `/` | Get authenticated user (company populated) |
+| POST | `/logout` | Logout — invalidates refresh token |
+| DELETE | `/` | Delete account (`?soft=true` for soft delete) |
+| PUT | `/password` | Change password |
+
+
+### Requires JWT + admin role
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/invite` | Invite a new user to the company |
+
+---
+
+## 🧪 Testing
+Open `test/index.http` and follow the requests, pasting tokens where indicated.
