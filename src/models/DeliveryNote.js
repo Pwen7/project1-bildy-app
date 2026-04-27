@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const workerSchema = new mongoose.Schema({
-  name: { type: String, trim: true },
+  name: { type: String, required: [true, 'Worker name is required'], trim: true },
   hours: { type: Number, min: [0, 'Hours cannot be negative'] }
 }, { _id: false })
 
