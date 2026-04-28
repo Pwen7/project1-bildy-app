@@ -1,27 +1,27 @@
 import { Router } from 'express'
 import {
-    changePasswordSchema,
-    inviteSchema,
-    loginSchema,
-    personalDataSchema,
-    refreshSchema,
-    registerSchema,
-    verificationSchema
+  changePasswordSchema,
+  inviteSchema,
+  loginSchema,
+  personalDataSchema,
+  refreshSchema,
+  registerSchema,
+  verificationSchema
 } from '../validators/user.validator.js'
 import { companySchema } from '../validators/company.validator.js'
 import {
-    changePassword,
-    deleteUser,
-    getUser,
-    inviteUser,
-    loginUser,
-    logoutUser,
-    refreshToken,
-    registerUser,
-    updateUserData,
-    uploadLogo,
-    upsertCompany,
-    verifyEmail
+  changePassword,
+  deleteUser,
+  getUser,
+  inviteUser,
+  loginUser,
+  logoutUser,
+  refreshToken,
+  registerUser,
+  updateUserData,
+  uploadLogo,
+  upsertCompany,
+  verifyEmail
 } from '../controllers/user.controller.js'
 import authMiddleware from '../middlewares/auth.middleware.js'
 import validate from '../middlewares/validate.middleware.js'
