@@ -12,8 +12,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1038.0",
+    "@aws-sdk/s3-request-presigner": "^3.1038.0",
     "@slack/webhook": "^7.0.9",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.10.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.1",
     "helmet": "^8.1.0",
@@ -21,6 +24,7 @@
     "mongoose": "^9.2.3",
     "morgan-body": "^2.6.9",
     "multer": "^2.1.0",
+    "sharp": "^0.34.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "zod": "^4.3.6"
