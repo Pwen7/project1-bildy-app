@@ -77,6 +77,14 @@ describe('POST /api/deliverynote', () => {
     })
     expect(res.statusCode).toBe(404)
   })
+
+  it('404 — cliente inexistente', async () => {
+    const res = await request(app).post('/api/deliverynote').set('Authorization', `Bearer ${token}`).send({
+      project: projectId, client: '000000000000000000000000',
+      format: 'hours', workDate: '2025-06-01', hours: 4
+    })
+    expect(res.statusCode).toBe(404)
+  })
 })
 
 describe('GET /api/deliverynote', () => {
@@ -122,6 +130,69 @@ describe('GET /api/deliverynote/pdf/:id', () => {
     const res = await request(app).get(`/api/deliverynote/pdf/${noteId}`).set('Authorization', `Bearer ${token}`)
     expect(res.statusCode).toBe(200)
     expect(res.headers['content-type']).toMatch(/pdf/)
+  })
+})
+
+describe('GET /api/deliverynote/:id', () => {
+  let noteId
+
+  beforeEach(async () => {
+    await setup()
+    const res = await request(app).post('/api/deliverynote').set('Authorization', `Bearer ${token}`).send({
+      project: projectId, client: clientId,
+      format: 'hours', workDate: '2025-06-01', hours: 6
+    })
+    noteId = res.body.data.note._id
+  })
+
+  it('200 — obtiene albarán por ID', async () => {
+    const res = await request(app).get(`/api/deliverynote/${noteId}`).set('Authorization', `Bearer ${token}`)
+    expect(res.statusCode).toBe(200)
+    expect(res.body.data.note._id).toBe(noteId)
+  })
+
+  it('404 — ID inexistente', async () => {
+    const res = await request(app).get('/api/deliverynote/000000000000000000000000').set('Authorization', `Bearer ${token}`)
+    expect(res.statusCode).toBe(404)
+  })
+})
+
+describe('PATCH /api/deliverynote/:id/sign', () => {
+  let noteId
+
+  beforeEach(async () => {
+    await setup()
+    const res = await request(app).post('/api/deliverynote').set('Authorization', `Bearer ${token}`).send({
+      project: projectId, client: clientId,
+      format: 'hours', workDate: '2025-06-01', hours: 4
+    })
+    noteId = res.body.data.note._id
+  })
+
+  it('200 — firma el albarán con imagen de firma', async () => {
+    const res = await request(app)
+      .patch(`/api/deliverynote/${noteId}/sign`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach('signature', Buffer.from('fake-signature-data'), { filename: 'firma.jpg', contentType: 'image/jpeg' })
+    expect(res.statusCode).toBe(200)
+    expect(res.body.data.note.signed).toBe(true)
+  })
+
+  it('400 — firma sin adjuntar imagen', async () => {
+    const res = await request(app)
+      .patch(`/api/deliverynote/${noteId}/sign`)
+      .set('Authorization', `Bearer ${token}`)
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('400 — albarán ya firmado no puede firmarse de nuevo', async () => {
+    const DeliveryNote = (await import('../src/models/DeliveryNote.js')).default
+    await DeliveryNote.findByIdAndUpdate(noteId, { signed: true })
+    const res = await request(app)
+      .patch(`/api/deliverynote/${noteId}/sign`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach('signature', Buffer.from('fake-signature-data'), { filename: 'firma.jpg', contentType: 'image/jpeg' })
+    expect(res.statusCode).toBe(400)
   })
 })
 

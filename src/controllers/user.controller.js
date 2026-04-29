@@ -5,6 +5,7 @@ import AppError from '../utils/AppError.js'
 import { hashPassword, comparePassword } from '../utils/password.util.js'
 import { sendVerificationEmail } from '../services/mail.service.js'
 import { uploadToCloud } from '../services/storage.service.js'
+import { sendSlackNotification } from '../services/logger.service.js'
 
 const generateVerificationCode = () => String(Math.floor(100000 + Math.random() * 900000))
 
@@ -352,6 +353,10 @@ export const inviteUser = async (req, res, next) => {
     sendVerificationEmail(email, verificationCode).catch((err) =>
       console.error('⚠️ [Mail] Could not send invite email:', err.message)
     )
+
+    sendSlackNotification(
+      `👤 Nuevo usuario invitado\nEmail: ${newUser.email}\nRole: ${newUser.role}`
+    ).catch(() => {})
 
     res.status(201).json({
       error: false,

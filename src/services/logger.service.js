@@ -1,7 +1,13 @@
+import { IncomingWebhook } from '@slack/webhook'
+
+const webhook = process.env.SLACK_WEBHOOK_URL
+  ? new IncomingWebhook(process.env.SLACK_WEBHOOK_URL)
+  : null
+
 export const notifySlack = async (err, req) => {
-  const webhookUrl = process.env.SLACK_WEBHOOK_URL
+  if (!webhook) return
   try {
-    const body = {
+    await webhook.send({
       text: '🚨 Error 5XX en BildyApp',
       attachments: [
         {
@@ -15,14 +21,17 @@ export const notifySlack = async (err, req) => {
           ]
         }
       ]
-    }
-
-    await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
     })
   } catch (slackErr) {
     console.error('❌ [Slack] Failed to send notification:', slackErr.message)
+  }
+}
+
+export const sendSlackNotification = async (message) => {
+  if (!webhook) return
+  try {
+    await webhook.send({ text: message })
+  } catch (err) {
+    console.error('❌ [Slack] Failed to send notification:', err.message)
   }
 }

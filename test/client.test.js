@@ -138,3 +138,40 @@ describe('PATCH /api/client/:id/restore', () => {
     expect(list.body.data.clients).toHaveLength(1)
   })
 })
+
+describe('PUT /api/client/:id', () => {
+  let clientId
+
+  beforeEach(async () => {
+    await setup()
+    const res = await request(app).post('/api/client').set('Authorization', `Bearer ${token}`).send(CLIENT)
+    clientId = res.body.data.client._id
+  })
+
+  it('200 — actualiza el nombre del cliente', async () => {
+    const res = await request(app)
+      .put(`/api/client/${clientId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Cliente Actualizado SA' })
+    expect(res.statusCode).toBe(200)
+    expect(res.body.data.client.name).toBe('Cliente Actualizado SA')
+  })
+
+  it('409 — CIF duplicado al actualizar', async () => {
+    await request(app).post('/api/client').set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Segundo SA', cif: 'B11111112' })
+    const res = await request(app)
+      .put(`/api/client/${clientId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ cif: 'B11111112' })
+    expect(res.statusCode).toBe(409)
+  })
+
+  it('404 — cliente inexistente', async () => {
+    const res = await request(app)
+      .put('/api/client/000000000000000000000000')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'No existe' })
+    expect(res.statusCode).toBe(404)
+  })
+})

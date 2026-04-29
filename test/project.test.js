@@ -100,9 +100,75 @@ describe('DELETE + restore /api/project', () => {
     expect(res.body.data.projects).toHaveLength(1)
   })
 
+  it('200 — hard delete elimina el proyecto permanentemente', async () => {
+    await request(app).delete(`/api/project/${projectId}`).set('Authorization', `Bearer ${token}`)
+    const res = await request(app).get('/api/project').set('Authorization', `Bearer ${token}`)
+    expect(res.body.data.projects).toHaveLength(0)
+  })
+
   it('200 — restaura proyecto archivado', async () => {
     await request(app).delete(`/api/project/${projectId}?soft=true`).set('Authorization', `Bearer ${token}`)
     const res = await request(app).patch(`/api/project/${projectId}/restore`).set('Authorization', `Bearer ${token}`)
     expect(res.statusCode).toBe(200)
+  })
+})
+
+describe('GET /api/project/:id', () => {
+  let projectId
+
+  beforeEach(async () => {
+    await setup()
+    const res = await request(app).post('/api/project').set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Proyecto X', projectCode: 'PRJ-X1', client: clientId })
+    projectId = res.body.data.project._id
+  })
+
+  it('200 — obtiene proyecto por ID', async () => {
+    const res = await request(app).get(`/api/project/${projectId}`).set('Authorization', `Bearer ${token}`)
+    expect(res.statusCode).toBe(200)
+    expect(res.body.data.project._id).toBe(projectId)
+  })
+
+  it('404 — ID inexistente', async () => {
+    const res = await request(app).get('/api/project/000000000000000000000000').set('Authorization', `Bearer ${token}`)
+    expect(res.statusCode).toBe(404)
+  })
+})
+
+describe('PUT /api/project/:id', () => {
+  let projectId
+
+  beforeEach(async () => {
+    await setup()
+    const res = await request(app).post('/api/project').set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Editable', projectCode: 'PRJ-EDIT', client: clientId })
+    projectId = res.body.data.project._id
+  })
+
+  it('200 — actualiza el nombre del proyecto', async () => {
+    const res = await request(app)
+      .put(`/api/project/${projectId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Nombre Actualizado' })
+    expect(res.statusCode).toBe(200)
+    expect(res.body.data.project.name).toBe('Nombre Actualizado')
+  })
+
+  it('409 — código de proyecto duplicado al actualizar', async () => {
+    await request(app).post('/api/project').set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Otro', projectCode: 'PRJ-OTHER', client: clientId })
+    const res = await request(app)
+      .put(`/api/project/${projectId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ projectCode: 'PRJ-OTHER' })
+    expect(res.statusCode).toBe(409)
+  })
+
+  it('404 — proyecto inexistente', async () => {
+    const res = await request(app)
+      .put('/api/project/000000000000000000000000')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'No existe' })
+    expect(res.statusCode).toBe(404)
   })
 })
