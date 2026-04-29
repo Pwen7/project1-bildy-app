@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import httpServer from './app.js'
+import { httpServer } from './app.js'
 import dbConnect from './config/db.config.js'
 import mongoose from 'mongoose'
 import { getIO } from './services/socket.service.js'

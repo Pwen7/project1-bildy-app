@@ -1,7 +1,6 @@
 import mongoose from "mongoose"
 import { notifySlack } from '../services/logger.service.js'
 
-// Rutas no encontradas
 export const notFound = (req, res) => {
   res.status(404).json({
     error: true,
@@ -31,7 +30,6 @@ export const errorHandler = async (err, req, res, next) => {
     })
   }
 
-  // Error de duplicado
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0] || 'field'
     return res.status(409).json({
@@ -40,7 +38,6 @@ export const errorHandler = async (err, req, res, next) => {
     })
   }
 
-  // Error de Multer - tamaño
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({
       error: true,
@@ -48,7 +45,6 @@ export const errorHandler = async (err, req, res, next) => {
     })
   }
 
-  // Error de Multer - cantidad
   if (err.code === 'LIMIT_FILE_COUNT') {
     return res.status(400).json({
       error: true,
@@ -56,7 +52,6 @@ export const errorHandler = async (err, req, res, next) => {
     })
   }
 
-  // Error de Zod
   if (err.name === 'ZodError') {
     const errors = err.issues.map(e => ({
       field: e.path.join('.'),

@@ -11,26 +11,27 @@ import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 
 const app = express()
-const httpServer = createServer(app)
+export const httpServer = createServer(app)
 
 initSocket(httpServer)
 
-// Seguridad
+// Security
 app.use(helmet())
 app.use(rateLimit({
-  windowMs: 15 * 60 * 1000,  // 15 min
+  windowMs: 15 * 60 * 1000,
   max: 100,
   message: { error: true, message: 'Too many requests, please try again later' }
 }))
 
-// Middleware globales
+// Global middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(logger)
 
+// Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs))
 
-// Check
+// Health check
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -40,11 +41,9 @@ app.get('/health', (req, res) => {
   })
 })
 
-// API routes
 app.use('/api', routes)
 
-// Manejo de errores
 app.use(notFound)
 app.use(errorHandler)
 
-export default httpServer
+export default app
