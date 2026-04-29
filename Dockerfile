@@ -1,10 +1,10 @@
-# ── Stage 1: dependencias ────────────────────────────────────────────────────
+# Stage 1: dependencias
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# ── Stage 2: producción ───────────────────────────────────────────────────────
+# Stage 2: production
 FROM node:22-alpine AS production
 WORKDIR /app
 

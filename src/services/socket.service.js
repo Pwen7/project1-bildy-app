@@ -3,8 +3,10 @@ import { verifyAccessToken } from '../utils/jwt.util.js'
 import User from '../models/User.js'
 import AppError from '../utils/AppError.js'
 
+let io
+
 export const initSocket = (httpServer) => {
-  let io = new Server(httpServer, {
+  io = new Server(httpServer, {
     cors: {
       origin: process.env.CLIENT_URL,
       methods: ['GET', 'POST']
@@ -13,13 +15,14 @@ export const initSocket = (httpServer) => {
 
   io.use(async (socket, next) => {
     try {
-      const token = socket.handshake.auth?.token ||
+      const token =
+        socket.handshake.auth?.token ||
         socket.handshake.headers?.authorization?.split(' ')[1]
 
       if (!token) { throw AppError.unauthorized('Authentication required') }
 
       const payload = verifyAccessToken(token)
-      const user = await User.findById(payload.userId).select('-password -refreshToken')
+      const user = await User.findById(payload._id).select('-password -refreshToken')
 
       if (!user || user.deleted) throw AppError.unauthorized('User not found')
 
@@ -37,9 +40,11 @@ export const initSocket = (httpServer) => {
       socket.join(user.company.toString())
       console.log(`🔌 [Socket] ${user.email} joined room ${user.company}`)
     }
+
     socket.on('disconnect', () => {
       console.log(`🔌 [Socket] ${user.email} disconnected`)
     })
+
     return io
   })
 }
