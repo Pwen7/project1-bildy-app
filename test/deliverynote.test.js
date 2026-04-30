@@ -1,24 +1,25 @@
 import { jest } from '@jest/globals'
-import request from 'supertest'
-import app from '../src/app.js'
-import { connect, closeDatabase, clearDatabase } from './setup.js'
 
-jest.mock('../src/services/mail.service.js', () => ({
-  sendVerificationEmail: jest.fn().mockResolvedValue(true)
+jest.unstable_mockModule('../src/services/mail.service.js', () => ({
+  sendVerificationEmail: jest.fn().mockResolvedValue({ messageId: 'test-mock' })
 }))
 
-jest.mock('../src/services/socket.service.js', () => ({
+jest.unstable_mockModule('../src/services/socket.service.js', () => ({
   initSocket: jest.fn(),
   getIO: jest.fn(() => ({ to: jest.fn(() => ({ emit: jest.fn() })), close: jest.fn() }))
 }))
 
-jest.mock('../src/services/storage.service.js', () => ({
+jest.unstable_mockModule('../src/services/storage.service.js', () => ({
   uploadToCloud: jest.fn().mockResolvedValue('https://cloud.example.com/test.webp')
 }))
 
-jest.mock('../src/services/pdf.service.js', () => ({
+jest.unstable_mockModule('../src/services/pdf.service.js', () => ({
   generateDeliveryNotePDF: jest.fn().mockResolvedValue(Buffer.from('%PDF-1.4 test'))
 }))
+
+const request = (await import('supertest')).default
+const { default: app } = await import('../src/app.js')
+const { connect, closeDatabase, clearDatabase } = await import('./setup.js')
 
 const USER = { email: 'dn@bildy.test', password: 'Password123' }
 const COMPANY = { name: 'DN SL', cif: 'B77777777', address: { street: 'St Test', city: 'Madrid', province: 'Madrid' } }

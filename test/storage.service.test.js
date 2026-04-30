@@ -16,7 +16,7 @@ const mockSharpInstance = {
   toBuffer: jest.fn().mockResolvedValue(Buffer.from('processed-webp'))
 }
 const mockSharp = jest.fn(() => mockSharpInstance)
-jest.unstable_mockModule('sharp', () => mockSharp)
+jest.mock('sharp', () => mockSharp)
 
 
 const { uploadToCloud } = await import('../src/services/storage.service.js')

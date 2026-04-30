@@ -1,6 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary'
-import sharp from 'sharp'
+import { createRequire } from 'module'
 import { Readable } from 'stream'
+
+const require = createRequire(import.meta.url)
+const sharp = require('sharp')
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

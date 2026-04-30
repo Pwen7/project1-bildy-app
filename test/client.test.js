@@ -4,7 +4,7 @@ import app from '../src/app.js'
 import { connect, closeDatabase, clearDatabase } from './setup.js'
 
 jest.mock('../src/services/mail.service.js', () => ({
-  sendVerificationEmail: jest.fn().mockResolvedValue(true)
+  sendVerificationEmail: jest.fn().mockResolvedValue({ messageId: 'test-mock' })
 }))
 
 jest.mock('../src/services/socket.service.js', () => ({
