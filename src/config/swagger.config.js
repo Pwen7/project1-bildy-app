@@ -18,23 +18,82 @@ const options = {
       responses: {
         BadRequest: {
           description: 'Invalid request',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Error' },
+              example: { error: true, message: 'Invalid request data' }
+            }
+          }
+        },
+        ValidationError: {
+          description: 'Validation failed — field-level errors returned',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ValidationError' },
+              example: {
+                error: true,
+                message: 'Zod validation error',
+                details: [
+                  { field: 'email', message: 'Invalid email format' },
+                  { field: 'password', message: 'String must contain at least 8 character(s)' }
+                ]
+              }
+            }
+          }
         },
         Unauthorized: {
           description: 'Missing or invalid JWT token',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Error' },
+              example: { error: true, message: 'Token not provided or invalid' }
+            }
+          }
         },
         Forbidden: {
           description: 'Not enough permissions',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Error' },
+              example: { error: true, message: 'Access denied' }
+            }
+          }
         },
         NotFound: {
           description: 'Resource not found',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Error' },
+              example: { error: true, message: 'Resource not found' }
+            }
+          }
         },
         Conflict: {
-          description: 'Resource does not exist anymore',
-          content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } }
+          description: 'Resource already exists',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Error' },
+              example: { error: true, message: 'The record already exists' }
+            }
+          }
+        },
+        TooManyRequests: {
+          description: 'Too many requests',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Error' },
+              example: { error: true, message: 'Too many attempts. Try again later.' }
+            }
+          }
+        },
+        InternalServerError: {
+          description: 'Internal server error',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Error' },
+              example: { error: true, message: 'Internal server error' }
+            }
+          }
         }
       },
       schemas: {
@@ -43,6 +102,23 @@ const options = {
           properties: {
             error: { type: 'boolean', example: true },
             message: { type: 'string', example: 'Mensaje de error' }
+          }
+        },
+        ValidationError: {
+          type: 'object',
+          properties: {
+            error: { type: 'boolean', example: true },
+            message: { type: 'string', example: 'Zod validation error' },
+            details: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  field: { type: 'string', example: 'email' },
+                  message: { type: 'string', example: 'Invalid email format' }
+                }
+              }
+            }
           }
         },
         Address: {

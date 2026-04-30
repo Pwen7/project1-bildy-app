@@ -1,6 +1,5 @@
 @base = http://localhost:3000/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWYxYzRmMTNmMmFjMWYzMjM4NTkwODMiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzc0NTIyNzMsImV4cCI6MTc3NzQ1OTQ3M30.kXRHcacuPXixsBauCE82DfValOYT4rVyJSuS1MgWwu0
-
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWYyNzRmYzZhNDgyNDg2NDhiNTRhNTciLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzc0OTc0MjgsImV4cCI6MTc3NzUwNDYyOH0.iJet7zWhQIPL7bNDhYryt3f1_3Twh0kwjC6v3gWN_T4
 ### USERS
 
 ### 1. Registrar usuario
@@ -18,7 +17,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "code": "652868"
+  "code": "845884"
 }
 
 ### 3. Login
