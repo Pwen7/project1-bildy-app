@@ -30,7 +30,7 @@ const clientSchema = new mongoose.Schema({
     required: [true, 'Project code is required'],
     trim: true,
   },
-  addressSchema: addressSchema,
+  address: addressSchema,
   email: {
     type: String,
     trim: true,

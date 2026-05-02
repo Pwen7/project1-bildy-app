@@ -9,6 +9,7 @@ import { initSocket } from './services/socket.service.js'
 import mongoose from 'mongoose'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
+import mongoSanitize from 'express-mongo-sanitize'
 
 const app = express()
 export const httpServer = createServer(app)
@@ -26,6 +27,12 @@ app.use(rateLimit({
 // Global middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+app.use((req, res, next) => {
+  if (req.body) req.body = mongoSanitize.sanitize(req.body)
+  if (req.params) req.params = mongoSanitize.sanitize(req.params)
+  next()
+})
 app.use(logger)
 
 // Swagger UI

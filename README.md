@@ -62,5 +62,79 @@ Ver `.env.example`.
 ---
 
 ## 📁 Folder structure
-
+```
+└── 📁project1-bildy-app
+    └── 📁.github
+        └── 📁workflow
+            ├── test.yml
+    └── 📁src
+        └── 📁config
+            ├── db.config.js
+            ├── swagger.config.js
+        └── 📁controllers
+            ├── client.controller.js
+            ├── deliverynote.controller.js
+            ├── project.controller.js
+            ├── user.controller.js
+        └── 📁middlewares
+            ├── auth.middleware.js
+            ├── error.middleware.js
+            ├── logger.middleware.js
+            ├── role.middleware.js
+            ├── upload.middleware.js
+            ├── validate.middleware.js
+        └── 📁models
+            ├── address.model.js
+            ├── Client.js
+            ├── Company.js
+            ├── DeliveryNote.js
+            ├── Project.js
+            ├── User.js
+        └── 📁routes
+            ├── client.routes.js
+            ├── deliverynote.routes.js
+            ├── index.js
+            ├── project.routes.js
+            ├── user.routes.js
+        └── 📁services
+            ├── logger.service.js
+            ├── mail.service.js
+            ├── pdf.service.js
+            ├── socket.service.js
+            ├── storage.service.js
+        └── 📁utils
+            ├── AppError.js
+            ├── jwt.util.js
+            ├── password.util.js
+        └── 📁validators
+            └── 📁shared
+                ├── fields.js
+            ├── client.validator.js
+            ├── company.validator.js
+            ├── deliverynote.validator.js
+            ├── project.validator.js
+            ├── user.validator.js
+        ├── app.js
+        ├── index.js
+    └── 📁test
+        └── 📁__mocks__
+            ├── mail.service.js
+        ├── auth.test.js
+        ├── client.test.js
+        ├── deliverynote.test.js
+        ├── firma.jpg
+        ├── logo.png
+        ├── project.test.js
+        ├── request.http
+        ├── setup.js
+        ├── socket.service.test.js
+        ├── storage.service.test.js
+    ├── .env.example
+    ├── .gitignore
+    ├── docker-compose.yml
+    ├── Dockerfile
+    ├── jest.config.js
+    ├── package-lock.json
+    ├── package.json
+    └── README.md
 ```
