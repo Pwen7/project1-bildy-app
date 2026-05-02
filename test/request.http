@@ -1,0 +1,369 @@
+@base           = http://localhost:3000/api
+@token          = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWYzYmQ0ZjBiNGY5OGRkZTMwZWRjYzUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzc3MzEyMTksImV4cCI6MTc3NzczODQxOX0.deukoIC0W3NpNJZbpCoyKX38ybdPbm_FWTsiw9Hcwbw
+@refreshToken   = fbece2447c94857ba53ff6834a145176b67136c64be0f27c39927eafceb7afc3092257f318639c89efc530c8f5a6e09b62d706201c2f61b5a36d5f63be73adbc
+@clientId       = 69f60755e1916e404f8980b8
+@projectId      = 69f60796e1916e404f8980ca
+@noteId         = 69f607f9e1916e404f8980e0
+
+@guestEmail     = guest@bildyapp.com
+@guestPassword  = Password123
+
+@verifyCode     = 772146
+
+
+### Health check
+GET http://localhost:3000/health
+
+### Swagger UI
+GET http://localhost:3000/api-docs
+
+
+### USERS — autenticación y perfil
+
+### 1. Registrar usuario (devuelve accessToken y refreshToken)
+POST {{base}}/user/register
+Content-Type: application/json
+
+{
+  "email": "demo@bildyapp.com",
+  "password": "Password123"
+}
+
+### 2. Login
+POST {{base}}/user/login
+Content-Type: application/json
+
+{
+  "email": "demo@bildyapp.com",
+  "password": "Password123"
+}
+
+### 3. Renovar token (usa @refreshToken)
+POST {{base}}/user/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### 4. Verificar email con código recibido
+PUT {{base}}/user/validation
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "code": "{{verifyCode}}"
+}
+
+### 5. Actualizar datos personales
+PUT {{base}}/user/register
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Demo",
+  "lastName": "User",
+  "nif": "12345678A"
+}
+
+### 6. Crear / unirse a empresa
+PATCH {{base}}/user/company
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Construcciones Demo SL",
+  "cif": "B12345678",
+  "address": {
+    "street": "Calle Mayor",
+    "number": "10",
+    "postal": "28001",
+    "city": "Madrid",
+    "province": "Madrid"
+  }
+}
+
+### 6b. Empresa como autónomo (isFreelance)
+PATCH {{base}}/user/company
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "isFreelance": true
+}
+
+### 7. Subir logo de empresa (multipart)
+PATCH {{base}}/user/logo
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="logo"; filename="logo.png"
+Content-Type: image/png
+
+< ./logo.png
+--boundary--
+
+### 8. Obtener perfil propio (con empresa populada)
+GET {{base}}/user
+Authorization: Bearer {{token}}
+
+### 9. Cambiar contraseña
+PUT {{base}}/user/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "currentPassword": "Password123",
+  "newPassword": "NewPassword456"
+}
+
+### 10. Invitar usuario a la empresa (solo admin)
+POST {{base}}/user/invite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "{{guestEmail}}",
+  "name": "Guest",
+  "lastName": "User",
+  "password": "{{guestPassword}}"
+}
+
+### 11. Logout (invalida refreshToken)
+POST {{base}}/user/logout
+Authorization: Bearer {{token}}
+
+### 12. Eliminar cuenta — soft (archiva)
+DELETE {{base}}/user?soft=true
+Authorization: Bearer {{token}}
+
+### 12b. Eliminar cuenta — hard (permanente)
+DELETE {{base}}/user
+Authorization: Bearer {{token}}
+
+
+### CLIENTS
+
+### 13. Crear cliente
+POST {{base}}/client
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Construcciones García SA",
+  "cif": "A87654321",
+  "email": "info@garcia.com",
+  "phone": "+34600000001",
+  "address": {
+    "street": "Gran Vía",
+    "number": "1",
+    "postal": "28013",
+    "city": "Madrid",
+    "province": "Madrid"
+  }
+}
+
+### 14. Listar clientes (paginado)
+GET {{base}}/client?page=1&limit=10&sort=-createdAt
+Authorization: Bearer {{token}}
+
+### 14b. Filtrar clientes por nombre
+GET {{base}}/client?name=García&page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 15. Obtener cliente por ID
+GET {{base}}/client/{{clientId}}
+Authorization: Bearer {{token}}
+
+### 16. Actualizar cliente
+PUT {{base}}/client/{{clientId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "phone": "+34611111111",
+  "email": "nuevo@garcia.com"
+}
+
+### 17. Archivar cliente (soft delete)
+DELETE {{base}}/client/{{clientId}}?soft=true
+Authorization: Bearer {{token}}
+
+### 17b. Eliminar cliente permanentemente
+DELETE {{base}}/client/{{clientId}}
+Authorization: Bearer {{token}}
+
+### 18. Listar clientes archivados
+GET {{base}}/client/archived?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 19. Restaurar cliente archivado
+PATCH {{base}}/client/{{clientId}}/restore
+Authorization: Bearer {{token}}
+
+
+### PROJECTS
+
+### 20. Crear proyecto
+POST {{base}}/project
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Reforma Oficinas Centro",
+  "projectCode": "PRJ-2025-001",
+  "client": "{{clientId}}",
+  "address": {
+    "street": "Gran Vía",
+    "number": "1",
+    "postal": "28013",
+    "city": "Madrid",
+    "province": "Madrid"
+  },
+  "email": "obra@garcia.com",
+  "notes": "Acceso por puerta trasera",
+  "active": true
+}
+
+### 21. Listar proyectos activos (paginado)
+GET {{base}}/project?page=1&limit=10&active=true&sort=-createdAt
+Authorization: Bearer {{token}}
+
+### 21b. Filtrar proyectos por cliente
+GET {{base}}/project?client={{clientId}}&page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 21c. Filtrar proyectos por nombre
+GET {{base}}/project?name=Reforma&page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 22. Obtener proyecto por ID
+GET {{base}}/project/{{projectId}}
+Authorization: Bearer {{token}}
+
+### 23. Actualizar proyecto
+PUT {{base}}/project/{{projectId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "notes": "Acceso actualizado — puerta principal",
+  "active": false
+}
+
+### 24. Archivar proyecto (soft delete)
+DELETE {{base}}/project/{{projectId}}?soft=true
+Authorization: Bearer {{token}}
+
+### 24b. Eliminar proyecto permanentemente
+DELETE {{base}}/project/{{projectId}}
+Authorization: Bearer {{token}}
+
+### 25. Listar proyectos archivados
+GET {{base}}/project/archived?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 26. Restaurar proyecto archivado
+PATCH {{base}}/project/{{projectId}}/restore
+Authorization: Bearer {{token}}
+
+
+### DELIVERY NOTES — albaranes
+
+### 27. Crear albarán de horas (workers)
+POST {{base}}/deliverynote
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "project": "{{projectId}}",
+  "client": "{{clientId}}",
+  "format": "hours",
+  "description": "Jornada de pintura interior",
+  "workDate": "2025-06-15",
+  "workers": [
+    { "name": "Carlos López", "hours": 8 },
+    { "name": "Ana Martínez", "hours": 6 }
+  ]
+}
+
+### 27b. Crear albarán de horas (total sin workers)
+POST {{base}}/deliverynote
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "project": "{{projectId}}",
+  "client": "{{clientId}}",
+  "format": "hours",
+  "description": "Jornada de replanteo",
+  "workDate": "2025-06-16",
+  "hours": 4
+}
+
+### 28. Crear albarán de materiales
+POST {{base}}/deliverynote
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "project": "{{projectId}}",
+  "client": "{{clientId}}",
+  "format": "material",
+  "description": "Suministro cemento",
+  "workDate": "2025-06-15",
+  "material": "Cemento Portland",
+  "quantity": 500,
+  "unit": "kg"
+}
+
+### 29. Listar albaranes (paginado)
+GET {{base}}/deliverynote?page=1&limit=10&sort=-workDate
+Authorization: Bearer {{token}}
+
+### 29b. Filtrar por proyecto
+GET {{base}}/deliverynote?project={{projectId}}&page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 29c. Filtrar por cliente
+GET {{base}}/deliverynote?client={{clientId}}&page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 29d. Filtrar por formato
+GET {{base}}/deliverynote?format=hours&page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 29e. Filtrar no firmados
+GET {{base}}/deliverynote?signed=false&page=1&limit=10
+Authorization: Bearer {{token}}
+
+###
+
+### 29f. Filtrar por rango de fechas
+GET {{base}}/deliverynote?from=2025-01-01&to=2025-12-31&page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 30. Obtener albarán por ID (con relaciones populadas)
+GET {{base}}/deliverynote/{{noteId}}
+Authorization: Bearer {{token}}
+
+### 31. Descargar PDF del albarán
+GET {{base}}/deliverynote/pdf/{{noteId}}
+Authorization: Bearer {{token}}
+
+### 32. Firmar albarán (sube imagen de firma — multipart)
+PATCH {{base}}/deliverynote/{{noteId}}/sign
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="signature"; filename="firma.jpg"
+Content-Type: image/jpg
+
+< ./firma.jpg
+--boundary--
+
+### 33. Eliminar albarán (solo si no está firmado)
+DELETE {{base}}/deliverynote/{{noteId}}
+Authorization: Bearer {{token}}
