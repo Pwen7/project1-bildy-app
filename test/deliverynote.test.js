@@ -221,3 +221,30 @@ describe('DELETE /api/deliverynote/:id', () => {
     expect(res.statusCode).toBe(400)
   })
 })
+
+describe('DeliveryNote — 401 sin token', () => {
+  it('POST /api/deliverynote → 401', async () => {
+    const res = await request(app).post('/api/deliverynote').send({})
+    expect(res.statusCode).toBe(401)
+  })
+  it('GET /api/deliverynote → 401', async () => {
+    const res = await request(app).get('/api/deliverynote')
+    expect(res.statusCode).toBe(401)
+  })
+  it('GET /api/deliverynote/:id → 401', async () => {
+    const res = await request(app).get('/api/deliverynote/000000000000000000000000')
+    expect(res.statusCode).toBe(401)
+  })
+  it('GET /api/deliverynote/pdf/:id → 401', async () => {
+    const res = await request(app).get('/api/deliverynote/pdf/000000000000000000000000')
+    expect(res.statusCode).toBe(401)
+  })
+  it('PATCH /api/deliverynote/:id/sign → 401', async () => {
+    const res = await request(app).patch('/api/deliverynote/000000000000000000000000/sign')
+    expect(res.statusCode).toBe(401)
+  })
+  it('DELETE /api/deliverynote/:id → 401', async () => {
+    const res = await request(app).delete('/api/deliverynote/000000000000000000000000')
+    expect(res.statusCode).toBe(401)
+  })
+})

@@ -68,7 +68,7 @@ describe('socket auth middleware', () => {
     const socket = { handshake: { auth: {}, headers: {} } }
     const next = jest.fn()
     await middleware(socket, next)
-    expect(next).toHaveBeenCalledWith(expect.stringContaining('Authentication required'))
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining('Authentication required') }))
   })
 
   it('llama a next con error cuando el token JWT es inválido', async () => {
@@ -76,7 +76,7 @@ describe('socket auth middleware', () => {
     const socket = { handshake: { auth: { token: 'bad.token' }, headers: {} } }
     const next = jest.fn()
     await middleware(socket, next)
-    expect(next).toHaveBeenCalledWith(expect.stringContaining('jwt malformed'))
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining('jwt malformed') }))
   })
 
   it('llama a next con error cuando el usuario no existe en BD', async () => {
@@ -85,7 +85,7 @@ describe('socket auth middleware', () => {
     const socket = { handshake: { auth: { token: 'valid.token' }, headers: {} } }
     const next = jest.fn()
     await middleware(socket, next)
-    expect(next).toHaveBeenCalledWith(expect.stringContaining('User not found'))
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining('User not found') }))
   })
 
   it('llama a next con error cuando el usuario está eliminado', async () => {
@@ -96,7 +96,7 @@ describe('socket auth middleware', () => {
     const socket = { handshake: { auth: { token: 'valid.token' }, headers: {} } }
     const next = jest.fn()
     await middleware(socket, next)
-    expect(next).toHaveBeenCalledWith(expect.stringContaining('User not found'))
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining('User not found') }))
   })
 
   it('asigna socket.user y llama a next() sin args con token válido', async () => {

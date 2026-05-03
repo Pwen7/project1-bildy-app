@@ -78,6 +78,59 @@ describe('GET /api/client', () => {
   })
 })
 
+describe('GET /api/client — paginación multi-página', () => {
+  beforeEach(async () => {
+    await setup()
+    // Seed 12 clients so page 1 (limit 10) is full and page 2 has 2 items
+    for (let i = 0; i < 12; i++) {
+      await request(app)
+        .post('/api/client')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: `Cliente ${i.toString().padStart(2, '0')}`, cif: `B0000000${i.toString().padStart(2, '0')}` })
+    }
+  })
+
+  it('200 — ?page=2&limit=10 devuelve la segunda página correctamente', async () => {
+    const p1 = await request(app).get('/api/client?page=1&limit=10&sort=createdAt').set('Authorization', `Bearer ${token}`)
+    const p2 = await request(app).get('/api/client?page=2&limit=10&sort=createdAt').set('Authorization', `Bearer ${token}`)
+    expect(p1.statusCode).toBe(200)
+    expect(p2.statusCode).toBe(200)
+    expect(p1.body.data.clients).toHaveLength(10)
+    expect(p2.body.data.clients).toHaveLength(2)
+    expect(p2.body.data.pagination).toMatchObject({ totalItems: 12, totalPages: 2, currentPage: 2 })
+    const ids1 = p1.body.data.clients.map(c => c._id)
+    const ids2 = p2.body.data.clients.map(c => c._id)
+    expect(ids1.some(id => ids2.includes(id))).toBe(false)
+  })
+})
+
+describe('Client — 401 sin token', () => {
+  it('GET /api/client → 401', async () => {
+    const res = await request(app).get('/api/client')
+    expect(res.statusCode).toBe(401)
+  })
+  it('GET /api/client/archived → 401', async () => {
+    const res = await request(app).get('/api/client/archived')
+    expect(res.statusCode).toBe(401)
+  })
+  it('GET /api/client/:id → 401', async () => {
+    const res = await request(app).get('/api/client/000000000000000000000000')
+    expect(res.statusCode).toBe(401)
+  })
+  it('PUT /api/client/:id → 401', async () => {
+    const res = await request(app).put('/api/client/000000000000000000000000').send({ name: 'X' })
+    expect(res.statusCode).toBe(401)
+  })
+  it('DELETE /api/client/:id → 401', async () => {
+    const res = await request(app).delete('/api/client/000000000000000000000000')
+    expect(res.statusCode).toBe(401)
+  })
+  it('PATCH /api/client/:id/restore → 401', async () => {
+    const res = await request(app).patch('/api/client/000000000000000000000000/restore')
+    expect(res.statusCode).toBe(401)
+  })
+})
+
 describe('GET /api/client/:id', () => {
   let clientId
 

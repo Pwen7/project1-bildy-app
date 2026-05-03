@@ -172,3 +172,34 @@ describe('PUT /api/project/:id', () => {
     expect(res.statusCode).toBe(404)
   })
 })
+
+describe('Project — 401 sin token', () => {
+  it('POST /api/project → 401', async () => {
+    const res = await request(app).post('/api/project').send({ name: 'x', projectCode: 'p', client: '000000000000000000000000' })
+    expect(res.statusCode).toBe(401)
+  })
+  it('GET /api/project → 401', async () => {
+    const res = await request(app).get('/api/project')
+    expect(res.statusCode).toBe(401)
+  })
+  it('GET /api/project/archived → 401', async () => {
+    const res = await request(app).get('/api/project/archived')
+    expect(res.statusCode).toBe(401)
+  })
+  it('GET /api/project/:id → 401', async () => {
+    const res = await request(app).get('/api/project/000000000000000000000000')
+    expect(res.statusCode).toBe(401)
+  })
+  it('PUT /api/project/:id → 401', async () => {
+    const res = await request(app).put('/api/project/000000000000000000000000').send({ name: 'X' })
+    expect(res.statusCode).toBe(401)
+  })
+  it('DELETE /api/project/:id → 401', async () => {
+    const res = await request(app).delete('/api/project/000000000000000000000000')
+    expect(res.statusCode).toBe(401)
+  })
+  it('PATCH /api/project/:id/restore → 401', async () => {
+    const res = await request(app).patch('/api/project/000000000000000000000000/restore')
+    expect(res.statusCode).toBe(401)
+  })
+})

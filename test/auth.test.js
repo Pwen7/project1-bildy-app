@@ -90,7 +90,7 @@ describe('PUT /api/user/validation', () => {
     const reg = await request(app).post('/api/user/register').send(USER)
     const token = reg.body.data.tokens.accessToken
     const User = (await import('../src/models/User.js')).default
-    const user = await User.findOne({ email: USER.email })
+    const user = await User.findOne({ email: USER.email }).select('+verificationCode')
     const res = await request(app)
       .put('/api/user/validation')
       .set('Authorization', `Bearer ${token}`)
@@ -291,3 +291,4 @@ describe('POST /api/user/invite', () => {
     expect(res.statusCode).toBe(400)
   })
 })
+

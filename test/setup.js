@@ -1,5 +1,9 @@
+import 'dotenv/config'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
+
+// Provide a default JWT secret for the test runner if .env is not present
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret-bildyapp-do-not-use-in-prod'
 
 let mongod
 
