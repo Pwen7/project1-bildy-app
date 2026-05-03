@@ -10,11 +10,14 @@ import mongoose from 'mongoose'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import mongoSanitize from 'express-mongo-sanitize'
+import cors from 'cors'
 
 const app = express()
 export const httpServer = createServer(app)
 
 initSocket(httpServer)
+
+app.use(cors({ origin: process.env.CLIENT_URL }))
 
 // Security
 app.use(helmet())

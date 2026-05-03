@@ -1,4 +1,6 @@
 import Client from '../models/Client.js'
+import Project from '../models/Project.js'
+import DeliveryNote from '../models/DeliveryNote.js'
 import AppError from '../utils/AppError.js'
 import { getIO } from '../services/socket.service.js'
 
@@ -131,8 +133,22 @@ export const deleteClient = async (req, res, next) => {
     if (!client) throw AppError.notFound('Client')
 
     if (soft) {
-      await Client.findByIdAndUpdate(id, { deleted: true })
+      // soft-delete
+      const projects = await Project.find({ client: id, company, deleted: false }, '_id')
+      const projectIds = projects.map(p => p._id)
+      await Promise.all([
+        Client.findByIdAndUpdate(id, { deleted: true }),
+        Project.updateMany({ client: id, company }, { deleted: true }),
+        DeliveryNote.updateMany({ project: { $in: projectIds }, company }, { deleted: true })
+      ])
     } else {
+      const [projectCount, noteCount] = await Promise.all([
+        Project.countDocuments({ client: id, company }),
+        DeliveryNote.countDocuments({ client: id, company })
+      ])
+      if (projectCount > 0 || noteCount > 0) {
+        throw AppError.conflict('Cannot hard-delete client with associated projects or delivery notes')
+      }
       await Client.findByIdAndDelete(id)
     }
 

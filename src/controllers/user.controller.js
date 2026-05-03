@@ -57,7 +57,7 @@ export const registerUser = async (req, res, next) => {
 export const verifyEmail = async (req, res, next) => {
   try {
     const { code } = req.body
-    const user = await User.findById(req.user._id)
+    const user = await User.findById(req.user._id).select('+verificationCode')
 
     if (user.status === 'verified') {
       throw AppError.badRequest('Email already verified')
@@ -131,7 +131,7 @@ export const updateUserData = async (req, res, next) => {
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { name, lastName, nif },
-      { returnDocument: 'after', runValidators: true }
+      { new: true, runValidators: true }
     )
 
     res.json({
@@ -285,7 +285,7 @@ export const deleteUser = async (req, res, next) => {
     const soft = req.query.soft === 'true'
 
     if (soft) {
-      await User.findByIdAndUpdate(req.user._id, { deleted: true })
+      await User.findByIdAndUpdate(req.user._id, { deleted: true, refreshToken: null })
     } else {
       await User.findByIdAndDelete(req.user._id)
     }

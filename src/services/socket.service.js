@@ -29,7 +29,7 @@ export const initSocket = (httpServer) => {
       socket.user = user
       next()
     } catch (err) {
-      next(err.message || 'Socket auth failed')
+      next(new Error(err.message || 'Socket auth failed'))
     }
   })
 

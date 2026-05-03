@@ -21,8 +21,8 @@ class AppError extends Error {
         return new AppError(message, 403, code)
     }
 
-    static notFound(resource = 'Resource not found', code = 'NOT_FOUND') {
-        return new AppError(`${resource} no encontrado`, 404, code)
+    static notFound(resource = 'Resource', code = 'NOT_FOUND') {
+        return new AppError(`${resource} not found`, 404, code)
     }
 
     static conflict(message = 'Conflict with existing resource', code = 'CONFLICT') {

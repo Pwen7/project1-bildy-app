@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { listQuerySchema, objectIdField, booleanCoerce, isoDateField } from './shared/query.js'
 
 const workerSchema = z.object({
   name: z.string().trim().min(1, 'Worker name is required'),
@@ -33,3 +34,12 @@ export const deliveryNoteSchema = z.discriminatedUnion('format', [
   materialNoteSchema,
   hoursNoteSchema
 ])
+
+export const deliveryNoteListQuerySchema = listQuerySchema.extend({
+  project: objectIdField.optional(),
+  client: objectIdField.optional(),
+  format: z.enum(['material', 'hours']).optional(),
+  signed: booleanCoerce.optional(),
+  from: isoDateField.optional(),
+  to: isoDateField.optional()
+})

@@ -26,7 +26,7 @@ export const errorHandler = async (err, req, res, next) => {
   if (err instanceof mongoose.Error.CastError) {
     return res.status(400).json({
       error: true,
-      message: `Invalid value for'${err.path}'`
+      message: `Invalid value for '${err.path}'`
     })
   }
 
@@ -75,7 +75,7 @@ export const errorHandler = async (err, req, res, next) => {
   // Error notificar a Slack
   const statusCode = err.status || 500
   if (statusCode >= 500) {
-    await notifySlack(err, req)
+    notifySlack(err, req).catch(e => console.error('Slack notify failed', e))
   }
 
   res.status(statusCode).json({

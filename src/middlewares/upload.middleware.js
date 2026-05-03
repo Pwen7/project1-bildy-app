@@ -4,12 +4,12 @@ import AppError from '../utils/AppError.js'
 const MAX_SIZE_MB = 5
 
 const fileFilter = (req, file, cb) => {
-  const allowed = ['image/jpeg', 'image/jpg', 'image/png']
+  const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
   if (allowed.includes(file.mimetype)) {
     cb(null, true)
   } else {
-    cb(AppError.badRequest('Only JPEG, JPG and PNG images are allowed'), false)
+    cb(AppError.badRequest('Only JPEG, JPG, PNG and WebP images are allowed'), false)
   }
 }
 
