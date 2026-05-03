@@ -42,7 +42,8 @@ const userSchema = new mongoose.Schema({
         index: true
     },
     verificationCode: {
-        type: String
+        type: String,
+        select: false
     },
     verificationAttempts: {
         type: Number,

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import addressSchema from './address.model.js'
 
-const clientSchema = new mongoose.Schema({
+const projectSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -54,7 +54,7 @@ const clientSchema = new mongoose.Schema({
   versionKey: false
 })
 
-clientSchema.index({ company: 1, projectCode: 1 }, { unique: true })
+projectSchema.index({ company: 1, projectCode: 1 }, { unique: true })
 
-const Project = mongoose.model('Project', clientSchema)
+const Project = mongoose.model('Project', projectSchema)
 export default Project
