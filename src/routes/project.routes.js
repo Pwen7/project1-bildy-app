@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import authMiddleware from '../middlewares/auth.middleware.js'
 import validate from '../middlewares/validate.middleware.js'
-import { createProjectSchema, projectSchema } from '../validators/project.validator.js'
+import { createProjectSchema, projectSchema, projectListQuerySchema } from '../validators/project.validator.js'
 import {
   createProject,
   deleteProject,
@@ -88,7 +88,7 @@ router.use(authMiddleware)
  *         $ref: '#/components/responses/InternalServerError'
  */
 router.post('/', validate(createProjectSchema), createProject)
-router.get('/', getProjects)
+router.get('/', validate(projectListQuerySchema, 'query'), getProjects)
 
 /**
  * @swagger
@@ -106,7 +106,7 @@ router.get('/', getProjects)
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/archived', getArchivedProjects)
+router.get('/archived', validate(projectListQuerySchema, 'query'), getArchivedProjects)
 
 /**
  * @swagger

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import authMiddleware from '../middlewares/auth.middleware.js'
 import validate from '../middlewares/validate.middleware.js'
-import { deliveryNoteSchema } from '../validators/deliverynote.validator.js'
+import { deliveryNoteSchema, deliveryNoteListQuerySchema } from '../validators/deliverynote.validator.js'
 import upload from '../middlewares/upload.middleware.js'
 import {
   createDeliveryNote,
@@ -94,7 +94,7 @@ router.use(authMiddleware)
  *         $ref: '#/components/responses/InternalServerError'
  */
 router.post('/', validate(deliveryNoteSchema), createDeliveryNote)
-router.get('/', getDeliveryNotes)
+router.get('/', validate(deliveryNoteListQuerySchema, 'query'), getDeliveryNotes)
 
 /**
  * @swagger

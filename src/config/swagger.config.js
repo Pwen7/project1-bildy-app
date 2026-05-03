@@ -248,6 +248,55 @@ const options = {
             updatedAt: { type: 'string', format: 'date-time' }
           }
         },
+        Dashboard: {
+          type: 'object',
+          properties: {
+            notesPerMonth: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  month: { type: 'string', example: '2025-06' },
+                  count: { type: 'integer', example: 12 }
+                }
+              }
+            },
+            hoursPerProject: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  projectId: { type: 'string', example: '65f8b3a2c9d1e20012345673' },
+                  projectName: { type: 'string', example: 'Reforma Oficinas 2025' },
+                  projectCode: { type: 'string', example: 'PRJ-001' },
+                  hours: { type: 'number', example: 120 }
+                }
+              }
+            },
+            materialsPerClient: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  clientId: { type: 'string', example: '65f8b3a2c9d1e20012345672' },
+                  clientName: { type: 'string', example: 'Construcciones Garcia SA' },
+                  clientCif: { type: 'string', example: 'B12345678' },
+                  quantities: { type: 'array', items: { type: 'number' }, example: [50, 25] },
+                  units: { type: 'array', items: { type: 'string' }, example: ['kg', 'kg'] }
+                }
+              }
+            },
+            counters: {
+              type: 'object',
+              properties: {
+                signed: { type: 'integer', example: 8 },
+                unsigned: { type: 'integer', example: 4 },
+                activeProjects: { type: 'integer', example: 3 },
+                archivedProjects: { type: 'integer', example: 1 }
+              }
+            }
+          }
+        },
         DeliveryNote: {
           type: 'object',
           properties: {

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import authMiddleware from '../middlewares/auth.middleware.js'
 import validate from '../middlewares/validate.middleware.js'
-import { createClientSchema, clientSchema } from '../validators/client.validator.js'
+import { createClientSchema, clientSchema, clientListQuerySchema } from '../validators/client.validator.js'
 import {
   createClient,
   deleteClient,
@@ -81,7 +81,7 @@ router.use(authMiddleware)
  *         $ref: '#/components/responses/InternalServerError'
  */
 router.post('/', validate(createClientSchema), createClient)
-router.get('/', getClients)
+router.get('/', validate(clientListQuerySchema, 'query'), getClients)
 
 /**
  * @swagger
@@ -99,7 +99,7 @@ router.get('/', getClients)
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/archived', getArchivedClients)
+router.get('/archived', validate(clientListQuerySchema, 'query'), getArchivedClients)
 
 /**
  * @swagger

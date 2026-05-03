@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { addressSchema, emailField } from './shared/fields.js'
+import { listQuerySchema, objectIdField, booleanCoerce } from './shared/query.js'
 
 export const createProjectSchema = z.object({
   name: z.string().trim().min(1, 'Project name is required'),
@@ -12,3 +13,9 @@ export const createProjectSchema = z.object({
 })
 
 export const projectSchema = createProjectSchema.partial()
+
+export const projectListQuerySchema = listQuerySchema.extend({
+  name: z.string().trim().optional(),
+  client: objectIdField.optional(),
+  active: booleanCoerce.optional()
+})
