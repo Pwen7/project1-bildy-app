@@ -1,14 +1,14 @@
 @base           = http://localhost:3000/api
-@token          = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWYzYmQ0ZjBiNGY5OGRkZTMwZWRjYzUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzc3MzEyMTksImV4cCI6MTc3NzczODQxOX0.deukoIC0W3NpNJZbpCoyKX38ybdPbm_FWTsiw9Hcwbw
-@refreshToken   = fbece2447c94857ba53ff6834a145176b67136c64be0f27c39927eafceb7afc3092257f318639c89efc530c8f5a6e09b62d706201c2f61b5a36d5f63be73adbc
-@clientId       = 69f60755e1916e404f8980b8
-@projectId      = 69f60796e1916e404f8980ca
-@noteId         = 69f607f9e1916e404f8980e0
+@token          = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWY4NmQxMWY2NWE3NWE0N2YwNWU0YjYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzc4ODg2NzAsImV4cCI6MTc3Nzg5NTg3MH0.ZQf1VU5eC0DatQ7LtyGj1CFOHeOC1H0cwNVhgK3FjtQ
+@refreshToken   = 50e371003e0c09fb9fb0c07ce91ca403f61f07bf1dbdf0b987f22d97b6110bd3283057a0c78a9ed9a3a0b5a3aecfa247d151119bfe5d15bd907ea1b2c2914146
+@clientId       = 69f8745a58c89e3b987543aa
+@projectId      = 69f874d258c89e3b987543ba
+@noteId         = 69f8751758c89e3b987543da
 
 @guestEmail     = guest@bildyapp.com
 @guestPassword  = Password123
 
-@verifyCode     = 772146
+@verifyCode     = 425732
 
 
 ### Health check
@@ -18,9 +18,8 @@ GET http://localhost:3000/health
 GET http://localhost:3000/api-docs
 
 
-### USERS — autenticación y perfil
-
-### 1. Registrar usuario (devuelve accessToken y refreshToken)
+### USERS
+### 1.
 POST {{base}}/user/register
 Content-Type: application/json
 
@@ -29,7 +28,7 @@ Content-Type: application/json
   "password": "Password123"
 }
 
-### 2. Login
+### 2.
 POST {{base}}/user/login
 Content-Type: application/json
 
@@ -38,7 +37,7 @@ Content-Type: application/json
   "password": "Password123"
 }
 
-### 3. Renovar token (usa @refreshToken)
+### 3.
 POST {{base}}/user/refresh
 Content-Type: application/json
 
@@ -46,7 +45,7 @@ Content-Type: application/json
   "refreshToken": "{{refreshToken}}"
 }
 
-### 4. Verificar email con código recibido
+### 4.
 PUT {{base}}/user/validation
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -55,7 +54,7 @@ Content-Type: application/json
   "code": "{{verifyCode}}"
 }
 
-### 5. Actualizar datos personales
+### 5. Actualizar datos
 PUT {{base}}/user/register
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -66,7 +65,7 @@ Content-Type: application/json
   "nif": "12345678A"
 }
 
-### 6. Crear / unirse a empresa
+### 6. Empresa
 PATCH {{base}}/user/company
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -83,7 +82,7 @@ Content-Type: application/json
   }
 }
 
-### 6b. Empresa como autónomo (isFreelance)
+### 6b.
 PATCH {{base}}/user/company
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -92,7 +91,7 @@ Content-Type: application/json
   "isFreelance": true
 }
 
-### 7. Subir logo de empresa (multipart)
+### 7.
 PATCH {{base}}/user/logo
 Authorization: Bearer {{token}}
 Content-Type: multipart/form-data; boundary=boundary
@@ -101,14 +100,14 @@ Content-Type: multipart/form-data; boundary=boundary
 Content-Disposition: form-data; name="logo"; filename="logo.png"
 Content-Type: image/png
 
-< ./logo.png
+< ./test/logo.png
 --boundary--
 
-### 8. Obtener perfil propio (con empresa populada)
+### 8.
 GET {{base}}/user
 Authorization: Bearer {{token}}
 
-### 9. Cambiar contraseña
+### 9.
 PUT {{base}}/user/password
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -118,7 +117,7 @@ Content-Type: application/json
   "newPassword": "NewPassword456"
 }
 
-### 10. Invitar usuario a la empresa (solo admin)
+### 10.
 POST {{base}}/user/invite
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -130,15 +129,15 @@ Content-Type: application/json
   "password": "{{guestPassword}}"
 }
 
-### 11. Logout (invalida refreshToken)
+### 11. Logout
 POST {{base}}/user/logout
 Authorization: Bearer {{token}}
 
-### 12. Eliminar cuenta — soft (archiva)
+### 12. soft delete
 DELETE {{base}}/user?soft=true
 Authorization: Bearer {{token}}
 
-### 12b. Eliminar cuenta — hard (permanente)
+### 12b. hard delete
 DELETE {{base}}/user
 Authorization: Bearer {{token}}
 
@@ -164,19 +163,19 @@ Content-Type: application/json
   }
 }
 
-### 14. Listar clientes (paginado)
+### 14. Listar
 GET {{base}}/client?page=1&limit=10&sort=-createdAt
 Authorization: Bearer {{token}}
 
-### 14b. Filtrar clientes por nombre
+### 14b.
 GET {{base}}/client?name=García&page=1&limit=10
 Authorization: Bearer {{token}}
 
-### 15. Obtener cliente por ID
+### 15.
 GET {{base}}/client/{{clientId}}
 Authorization: Bearer {{token}}
 
-### 16. Actualizar cliente
+### 16.
 PUT {{base}}/client/{{clientId}}
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -186,26 +185,25 @@ Content-Type: application/json
   "email": "nuevo@garcia.com"
 }
 
-### 17. Archivar cliente (soft delete)
+### 17. soft delete
 DELETE {{base}}/client/{{clientId}}?soft=true
 Authorization: Bearer {{token}}
 
-### 17b. Eliminar cliente permanentemente
+### 17b.
 DELETE {{base}}/client/{{clientId}}
 Authorization: Bearer {{token}}
 
-### 18. Listar clientes archivados
+### 18. clientes archivados
 GET {{base}}/client/archived?page=1&limit=10
 Authorization: Bearer {{token}}
 
-### 19. Restaurar cliente archivado
+### 19. restaurar
 PATCH {{base}}/client/{{clientId}}/restore
 Authorization: Bearer {{token}}
 
 
 ### PROJECTS
-
-### 20. Crear proyecto
+### 20.
 POST {{base}}/project
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -226,23 +224,23 @@ Content-Type: application/json
   "active": true
 }
 
-### 21. Listar proyectos activos (paginado)
+### 21. Listar
 GET {{base}}/project?page=1&limit=10&active=true&sort=-createdAt
 Authorization: Bearer {{token}}
 
-### 21b. Filtrar proyectos por cliente
+### 21b.
 GET {{base}}/project?client={{clientId}}&page=1&limit=10
 Authorization: Bearer {{token}}
 
-### 21c. Filtrar proyectos por nombre
+### 21c.
 GET {{base}}/project?name=Reforma&page=1&limit=10
 Authorization: Bearer {{token}}
 
-### 22. Obtener proyecto por ID
+### 22.
 GET {{base}}/project/{{projectId}}
 Authorization: Bearer {{token}}
 
-### 23. Actualizar proyecto
+### 23.
 PUT {{base}}/project/{{projectId}}
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -252,26 +250,25 @@ Content-Type: application/json
   "active": false
 }
 
-### 24. Archivar proyecto (soft delete)
+### 24. soft delete
 DELETE {{base}}/project/{{projectId}}?soft=true
 Authorization: Bearer {{token}}
 
-### 24b. Eliminar proyecto permanentemente
+### 24b.
 DELETE {{base}}/project/{{projectId}}
 Authorization: Bearer {{token}}
 
-### 25. Listar proyectos archivados
+### 25. archivados
 GET {{base}}/project/archived?page=1&limit=10
 Authorization: Bearer {{token}}
 
-### 26. Restaurar proyecto archivado
+### 26. restaurar
 PATCH {{base}}/project/{{projectId}}/restore
 Authorization: Bearer {{token}}
 
 
-### DELIVERY NOTES — albaranes
-
-### 27. Crear albarán de horas (workers)
+### DELIVERY NOTES
+### 27.
 POST {{base}}/deliverynote
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -288,7 +285,7 @@ Content-Type: application/json
   ]
 }
 
-### 27b. Crear albarán de horas (total sin workers)
+### 27b.
 POST {{base}}/deliverynote
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -302,7 +299,7 @@ Content-Type: application/json
   "hours": 4
 }
 
-### 28. Crear albarán de materiales
+### 28.
 POST {{base}}/deliverynote
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -318,41 +315,41 @@ Content-Type: application/json
   "unit": "kg"
 }
 
-### 29. Listar albaranes (paginado)
+### 29. listar
 GET {{base}}/deliverynote?page=1&limit=10&sort=-workDate
 Authorization: Bearer {{token}}
 
-### 29b. Filtrar por proyecto
+### 29b.
 GET {{base}}/deliverynote?project={{projectId}}&page=1&limit=10
 Authorization: Bearer {{token}}
 
-### 29c. Filtrar por cliente
+### 29c.
 GET {{base}}/deliverynote?client={{clientId}}&page=1&limit=10
 Authorization: Bearer {{token}}
 
-### 29d. Filtrar por formato
+### 29d. por formato
 GET {{base}}/deliverynote?format=hours&page=1&limit=10
 Authorization: Bearer {{token}}
 
-### 29e. Filtrar no firmados
+### 29e. no firmados
 GET {{base}}/deliverynote?signed=false&page=1&limit=10
 Authorization: Bearer {{token}}
 
 ###
 
-### 29f. Filtrar por rango de fechas
+### 29f. rango
 GET {{base}}/deliverynote?from=2025-01-01&to=2025-12-31&page=1&limit=10
 Authorization: Bearer {{token}}
 
-### 30. Obtener albarán por ID (con relaciones populadas)
+### 30.
 GET {{base}}/deliverynote/{{noteId}}
 Authorization: Bearer {{token}}
 
-### 31. Descargar PDF del albarán
+### 31. descargar
 GET {{base}}/deliverynote/pdf/{{noteId}}
 Authorization: Bearer {{token}}
 
-### 32. Firmar albarán (sube imagen de firma — multipart)
+### 32.
 PATCH {{base}}/deliverynote/{{noteId}}/sign
 Authorization: Bearer {{token}}
 Content-Type: multipart/form-data; boundary=boundary
@@ -361,9 +358,9 @@ Content-Type: multipart/form-data; boundary=boundary
 Content-Disposition: form-data; name="signature"; filename="firma.jpg"
 Content-Type: image/jpg
 
-< ./firma.jpg
+< ./test/firma.jpg
 --boundary--
 
-### 33. Eliminar albarán (solo si no está firmado)
+### 33.
 DELETE {{base}}/deliverynote/{{noteId}}
 Authorization: Bearer {{token}}
