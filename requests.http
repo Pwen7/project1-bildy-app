@@ -1,6 +1,6 @@
 @base           = http://localhost:3000/api
-@token          = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWY4NmQxMWY2NWE3NWE0N2YwNWU0YjYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzc4ODg2NzAsImV4cCI6MTc3Nzg5NTg3MH0.ZQf1VU5eC0DatQ7LtyGj1CFOHeOC1H0cwNVhgK3FjtQ
-@refreshToken   = 50e371003e0c09fb9fb0c07ce91ca403f61f07bf1dbdf0b987f22d97b6110bd3283057a0c78a9ed9a3a0b5a3aecfa247d151119bfe5d15bd907ea1b2c2914146
+@token          = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWY4NmQxMWY2NWE3NWE0N2YwNWU0YjYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzc5MDAxNjcsImV4cCI6MTc3NzkwNzM2N30.gzazSJRtX4_PYgHbl6p4Ut511b_eQqI5Y1QjKQMJjfY
+@refreshToken   = 2e1b16e007a22019f37b279d738d5cbff3626dda2ba2e7287e7251733d4e39cc4632aa33847606ecc6107224a5194816683a229a7a1ce4e727f942ef1f52c7c7
 @clientId       = 69f8745a58c89e3b987543aa
 @projectId      = 69f874d258c89e3b987543ba
 @noteId         = 69f8751758c89e3b987543da
@@ -363,4 +363,9 @@ Content-Type: image/jpg
 
 ### 33.
 DELETE {{base}}/deliverynote/{{noteId}}
+Authorization: Bearer {{token}}
+
+### DASHBOARD
+### 34.
+GET {{base}}/dashboard
 Authorization: Bearer {{token}}
