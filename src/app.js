@@ -17,10 +17,22 @@ export const httpServer = createServer(app)
 
 initSocket(httpServer)
 
-app.use(cors({ origin: process.env.CLIENT_URL }))
+app.use(cors({ origin: process.env.PUBLIC_URL }))
 
 // Security
-app.use(helmet())
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.socket.io"],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      connectSrc: ["'self'", "ws://localhost:3000", "http://localhost:3000"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+    }
+  }
+}))
+
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -28,6 +40,7 @@ app.use(rateLimit({
 }))
 
 // Global middlewares
+app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 

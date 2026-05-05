@@ -55,6 +55,34 @@ npm run test:watch      # modo watch
 
 Ver `requests.http` para ejemplos completos de cada endpoint.
 
+## Socket.io Test Client
+
+A browser-based test client is available at:
+
+```
+http://localhost:3000/index.html
+```
+
+**How to use:**
+1. Start the server (`npm run dev`)
+2. Open the URL above in your browser
+3. Get a JWT token from `POST /api/user/login` (via `/api-docs` or `requests.http`)
+4. Paste the token and click **Connect**
+5. Perform API actions (create clients, projects, delivery notes) in another tab to see events arrive in real time
+
+**Events you can monitor:**
+
+| Event | Triggered when |
+|-------|---------------|
+| `client:new` | A new client is created in your company |
+| `project:new` | A new project is created in your company |
+| `deliverynote:new` | A new delivery note is created in your company |
+| `deliverynote:signed` | A delivery note is signed (PDF generated and uploaded) |
+
+All events are scoped to your company's room — you only receive events from your own company. Use the **Simulate** buttons in the event table to preview what each event looks like without making real API calls.
+
+---
+
 ## Variables de entorno
 
 Ver `.env.example`.
@@ -63,16 +91,19 @@ Ver `.env.example`.
 
 ## 📁 Folder structure
 ```
-└── 📁project1-bildy-app
+└── 📁PWEB2-bildy-app
     └── 📁.github
-        └── 📁workflow
+        └── 📁workflows
             ├── test.yml
+    └── 📁public
+        ├── index.html
     └── 📁src
         └── 📁config
             ├── db.config.js
             ├── swagger.config.js
         └── 📁controllers
             ├── client.controller.js
+            ├── dashboard.controller.js
             ├── deliverynote.controller.js
             ├── project.controller.js
             ├── user.controller.js
@@ -92,6 +123,7 @@ Ver `.env.example`.
             ├── User.js
         └── 📁routes
             ├── client.routes.js
+            ├── dashboard.routes.js
             ├── deliverynote.routes.js
             ├── index.js
             ├── project.routes.js
@@ -109,6 +141,7 @@ Ver `.env.example`.
         └── 📁validators
             └── 📁shared
                 ├── fields.js
+                ├── query.js
             ├── client.validator.js
             ├── company.validator.js
             ├── deliverynote.validator.js
@@ -121,11 +154,14 @@ Ver `.env.example`.
             ├── mail.service.js
         ├── auth.test.js
         ├── client.test.js
+        ├── dashboard.test.js
         ├── deliverynote.test.js
+        ├── error.middleware.test.js
         ├── firma.jpg
         ├── logo.png
+        ├── logo.test.js
+        ├── pdf.service.test.js
         ├── project.test.js
-        ├── request.http
         ├── setup.js
         ├── socket.service.test.js
         ├── storage.service.test.js
@@ -136,5 +172,6 @@ Ver `.env.example`.
     ├── jest.config.js
     ├── package-lock.json
     ├── package.json
-    └── README.md
+    ├── README.md
+    └── requests.http
 ```

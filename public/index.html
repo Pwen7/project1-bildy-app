@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BildyApp — Test Client</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      background: #1e40af;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 12px;
+      padding: 12px;
+      height: calc(100vh - 48px);
+    }
+
+    .forms-panel {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .card-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      font-weight: 600;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #64748b;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=password],
+    input[type=date],
+    input[type=number],
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 6px 9px;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-family: inherit;
+      background: white;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 56px;
+      font-family: monospace;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    button {
+      padding: 7px 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    button:active {
+      opacity: 0.7;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-success {
+      background: #22c55e;
+      color: white;
+    }
+
+    .btn-warning {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #64748b;
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.9rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .dot-connected {
+      background: #22c55e;
+    }
+
+    .dot-disconnected {
+      background: #94a3b8;
+    }
+
+    .dot-error {
+      background: #ef4444;
+    }
+
+    .dot-connecting {
+      background: #f59e0b;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .35
+      }
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge-blue {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-purple {
+      background: #ede9fe;
+      color: #6d28d9;
+    }
+
+    .badge-orange {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .badge-green {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .badge-gray {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .response-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      padding: 7px 9px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      max-height: 270px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #374151;
+    }
+
+    .response-box.ok {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+
+    .response-box.err {
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #475569;
+      padding: 4px 0;
+      user-select: none;
+    }
+
+    details summary:hover {
+      color: #1e293b;
+    }
+
+    details[open] summary {
+      margin-bottom: 6px;
+    }
+
+    .divider {
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    .id-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    .id-row input {
+      width: 180px;
+      padding: 4px 7px;
+      font-size: 0.9rem;
+      display: inline;
+    }
+
+    /* Log panel */
+    .log-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .log-panel .card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .log-body {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .log-top {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .log-top strong {
+      font-size: 1rem;
+    }
+
+    .log-entry {
+      padding: 9px 14px;
+      border-bottom: 1px solid #f8fafc;
+      font-size: 0.9rem;
+    }
+
+    .log-name {
+      font-weight: 700;
+      color: #1d4ed8;
+    }
+
+    .log-time {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-left: 8px;
+    }
+
+    .log-pre {
+      background: #f8fafc;
+      border-radius: 4px;
+      padding: 5px 7px;
+      margin-top: 5px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 0.9rem;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    .log-connect {
+      border-left: 3px solid #22c55e;
+    }
+
+    .log-disconnect {
+      border-left: 3px solid #94a3b8;
+    }
+
+    .log-error {
+      border-left: 3px solid #ef4444;
+    }
+
+    .log-client {
+      border-left: 3px solid #3b82f6;
+    }
+
+    .log-project {
+      border-left: 3px solid #8b5cf6;
+    }
+
+    .log-note {
+      border-left: 3px solid #f59e0b;
+    }
+
+    .log-signed {
+      border-left: 3px solid #22c55e;
+    }
+
+    .log-info {
+      border-left: 3px solid #94a3b8;
+    }
+
+    .log-empty {
+      padding: 40px 14px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+
+    .room-tag {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-left: auto;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>BildyApp — Socket.IO &amp; REST Test Client</h1>
+    <span class="status-dot dot-connecting" id="hDot"></span>
+    <span id="hStatus" style="font-size:1rem">Connecting...</span>
+    <span id="hRoom" class="room-tag"></span>
+  </header>
+
+  <div class="layout">
+    <div class="forms-panel">
+
+      <!-- Connection -->
+      <div class="card">
+        <div class="card-header">
+          <span class="status-dot dot-connecting" id="cfgDot"></span>
+          Connection &amp; Token
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div>
+              <label>Base URL</label>
+              <input id="baseUrl" value="http://localhost:3000/api" />
+            </div>
+            <div>
+              <label>Access Token <span id="tokenOk" style="color:#22c55e;font-size:0.9rem"></span></label>
+              <input id="token" placeholder="Paste or auto-filled on login" />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Refresh Token</label>
+              <input id="refreshToken" placeholder="Auto-filled on login" />
+            </div>
+            <div class="actions" style="padding-top:14px">
+              <button class="btn-primary btn-sm" onclick="reconnectSocket()">Reconnect Socket</button>
+              <button class="btn-secondary btn-sm" onclick="clearLog()">Clear Log</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auth -->
+      <div class="card">
+        <div class="card-header">
+          Auth
+          <span class="badge badge-gray">POST /user/register &amp; /user/login</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div>
+              <label>Email</label>
+              <input id="authEmail" value="demo@bildyapp.com" />
+            </div>
+            <div>
+              <label>Password</label>
+              <input id="authPassword" type="password" value="Password123" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn-primary" onclick="doRegister()">Register</button>
+            <button class="btn-success" onclick="doLogin()">Login</button>
+            <button class="btn-secondary btn-sm" onclick="doLogout()">Logout</button>
+          </div>
+          <div id="authRes" class="response-box" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- User Setup -->
+      <div class="card">
+        <div class="card-body" style="padding:10px 14px">
+          <details>
+            <summary>User Setup — update profile &amp; company (needed before creating resources)</summary>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div class="row-3">
+                <div><label>Name</label><input id="uName" value="Demo" /></div>
+                <div><label>Last Name</label><input id="uLast" value="User" /></div>
+                <div><label>NIF</label><input id="uNif" value="12345678A" /></div>
+              </div>
+              <button class="btn-primary btn-sm" style="align-self:flex-start" onclick="doUpdateUser()">Update Personal
+                Data</button>
+              <div class="divider"></div>
+              <div class="row">
+                <div><label>Company Name</label><input id="coName" value="Construcciones Demo SL" /></div>
+                <div><label>Company CIF</label><input id="coCif" value="B12345678" /></div>
+              </div>
+              <div class="row-3">
+                <div><label>Street</label><input id="coStreet" value="Calle Mayor" /></div>
+                <div><label>City</label><input id="coCity" value="Madrid" /></div>
+                <div><label>Province</label><input id="coProv" value="Madrid" /></div>
+              </div>
+              <button class="btn-primary btn-sm" style="align-self:flex-start" onclick="doSetupCompany()">Setup
+                Company</button>
+              <div id="setupRes" class="response-box" style="display:none"></div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Clients -->
+      <div class="card">
+        <div class="card-header">
+          Clients
+          <span class="badge badge-blue">client:new</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div><label>Name</label><input id="cliName" value="Construcciones García SA" /></div>
+            <div><label>CIF</label><input id="cliCif" value="A87654321" /></div>
+          </div>
+          <div class="row">
+            <div><label>Email</label><input id="cliEmail" value="info@garcia.com" /></div>
+            <div><label>Phone</label><input id="cliPhone" value="+34600000001" /></div>
+          </div>
+          <div class="actions">
+            <button class="btn-primary" onclick="doCreateClient()">Create Client</button>
+            <button class="btn-secondary btn-sm" onclick="doListClients()">List</button>
+            <span class="id-row">ID: <input id="clientId" placeholder="auto-filled" /></span>
+          </div>
+          <div id="cliRes" class="response-box" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- Projects -->
+      <div class="card">
+        <div class="card-header">
+          Projects
+          <span class="badge badge-purple">project:new</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div><label>Name</label><input id="projName" value="Reforma Oficinas Centro" /></div>
+            <div><label>Code</label><input id="projCode" value="PRJ-2025-001" /></div>
+          </div>
+          <div class="row">
+            <div><label>Client ID</label><input id="projClientId" placeholder="Client ObjectId" /></div>
+            <div><label>City</label><input id="projCity" value="Madrid" /></div>
+          </div>
+          <div class="actions">
+            <button class="btn-primary" onclick="doCreateProject()">Create Project</button>
+            <button class="btn-secondary btn-sm" onclick="doListProjects()">List</button>
+            <span class="id-row">ID: <input id="projectId" placeholder="auto-filled" /></span>
+          </div>
+          <div id="projRes" class="response-box" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- Delivery Notes -->
+      <div class="card">
+        <div class="card-header">
+          Delivery Notes
+          <span class="badge badge-orange">deliverynote:new</span>
+          <span class="badge badge-green" style="margin-left:2px">deliverynote:signed</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div><label>Client ID</label><input id="nCliId" placeholder="Client ObjectId" /></div>
+            <div><label>Project ID</label><input id="nProjId" placeholder="Project ObjectId" /></div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Format</label>
+              <select id="nFormat" onchange="toggleFormat()">
+                <option value="hours">hours</option>
+                <option value="material">material</option>
+              </select>
+            </div>
+            <div><label>Work Date</label><input type="date" id="nDate" /></div>
+          </div>
+          <div><label>Description</label><input id="nDesc" value="Jornada de trabajo" /></div>
+
+          <div id="hoursFields">
+            <label>Workers (JSON array)</label>
+            <textarea id="nWorkers">[{"name":"Carlos López","hours":8},{"name":"Ana Martínez","hours":6}]</textarea>
+          </div>
+          <div id="matFields" style="display:none">
+            <div class="row-3">
+              <div><label>Material</label><input id="nMat" value="Cemento Portland" /></div>
+              <div><label>Quantity</label><input type="number" id="nQty" value="500" /></div>
+              <div><label>Unit</label><input id="nUnit" value="kg" /></div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="doCreateNote()">Create Note</button>
+            <button class="btn-secondary btn-sm" onclick="doListNotes()">List</button>
+            <span class="id-row">ID: <input id="noteId" placeholder="auto-filled" /></span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="row">
+            <div>
+              <label>Signature Image (for sign)</label>
+              <input type="file" id="sigFile" accept="image/*" style="font-size:0.9rem;padding:4px" />
+            </div>
+            <div class="actions" style="padding-top:14px">
+              <button class="btn-warning" onclick="doSignNote()">Sign Note</button>
+              <button class="btn-secondary btn-sm" onclick="doGetPdf()">PDF</button>
+            </div>
+          </div>
+
+          <div id="noteRes" class="response-box" style="display:none"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="log-panel">
+      <div class="card">
+        <div class="log-top">
+          <strong>Real-Time Event Log</strong>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="status-dot dot-connecting" id="logDot"></span>
+            <span id="logStatus" style="font-size:0.9rem">Connecting...</span>
+          </div>
+        </div>
+        <div class="log-body" id="logBody">
+          <div class="log-empty" id="logEmpty">
+            No events yet.<br />Use the forms on the left to trigger socket events.
+            <br /><br />
+            <strong>Monitored events:</strong><br />
+            client:new &nbsp;·&nbsp; project:new<br />
+            deliverynote:new &nbsp;·&nbsp; deliverynote:signed
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Config helpers
+
+    const BASE = () => document.getElementById('baseUrl').value.replace(/\/+$/, '')
+    const TOKEN = () => document.getElementById('token').value.trim()
+    const SERVER = () => BASE().replace(/\/api.*$/, '')
+
+    const hdrs = (extra = {}) => ({
+      'Content-Type': 'application/json',
+      ...(TOKEN() ? { Authorization: `Bearer ${TOKEN()}` } : {}),
+      ...extra
+    })
+
+    async function api(method, path, body) {
+      try {
+        const res = await fetch(`${BASE()}${path}`, {
+          method,
+          headers: hdrs(),
+          body: body !== undefined ? JSON.stringify(body) : undefined
+        })
+        const data = await res.json().catch(() => ({}))
+        return { ok: res.ok, status: res.status, data }
+      } catch (err) {
+        return { ok: false, status: 0, data: { message: err.message } }
+      }
+    }
+
+    function show(id, r) {
+      const el = document.getElementById(id)
+      el.style.display = 'block'
+      el.textContent = JSON.stringify(r.data, null, 2)
+      el.className = `response-box ${r.ok ? 'ok' : 'err'}`
+    }
+
+    // Auto-fill IDs after create
+
+    function fillIds(r) {
+      const d = r.data
+      // Client
+      const cliId = d?.client?._id ?? (d?.cif ? d._id : null)
+      if (cliId) {
+        document.getElementById('clientId').value = cliId
+        document.getElementById('projClientId').value = cliId
+        document.getElementById('nCliId').value = cliId
+      }
+      // Project
+      const projId = d?.project?._id ?? (d?.projectCode ? d._id : null)
+      if (projId) {
+        document.getElementById('projectId').value = projId
+        document.getElementById('nProjId').value = projId
+      }
+      // Delivery note
+      const noteId = d?.deliveryNote?._id ?? (d?.format ? d._id : null)
+      if (noteId) {
+        document.getElementById('noteId').value = noteId
+      }
+    }
+
+    // Auth
+
+    async function doRegister() {
+      const r = await api('POST', '/user/register', {
+        email: document.getElementById('authEmail').value,
+        password: document.getElementById('authPassword').value
+      })
+      if (r.ok && r.data.accessToken) setToken(r.data)
+      show('authRes', r)
+    }
+
+    async function doLogin() {
+      const r = await api('POST', '/user/login', {
+        email: document.getElementById('authEmail').value,
+        password: document.getElementById('authPassword').value
+      })
+      if (r.ok && r.data.accessToken) setToken(r.data)
+      show('authRes', r)
+    }
+
+    async function doLogout() {
+      const r = await api('POST', '/user/logout')
+      document.getElementById('token').value = ''
+      document.getElementById('refreshToken').value = ''
+      document.getElementById('tokenOk').textContent = ''
+      show('authRes', r)
+    }
+
+    function setToken(data) {
+      document.getElementById('token').value = data.accessToken
+      document.getElementById('refreshToken').value = data.refreshToken ?? ''
+      document.getElementById('tokenOk').textContent = '✓'
+      reconnectSocket()
+    }
+
+    // User setup
+
+    async function doUpdateUser() {
+      const r = await api('PUT', '/user/register', {
+        name: document.getElementById('uName').value,
+        lastName: document.getElementById('uLast').value,
+        nif: document.getElementById('uNif').value
+      })
+      show('setupRes', r)
+    }
+
+    async function doSetupCompany() {
+      const r = await api('PATCH', '/user/company', {
+        name: document.getElementById('coName').value,
+        cif: document.getElementById('coCif').value,
+        address: {
+          street: document.getElementById('coStreet').value,
+          city: document.getElementById('coCity').value,
+          province: document.getElementById('coProv').value
+        }
+      })
+      show('setupRes', r)
+    }
+
+    //    Clients
+
+    async function doCreateClient() {
+      const r = await api('POST', '/client', {
+        name: document.getElementById('cliName').value,
+        cif: document.getElementById('cliCif').value,
+        email: document.getElementById('cliEmail').value,
+        phone: document.getElementById('cliPhone').value,
+        address: { street: 'Gran Vía', number: '1', postal: '28013', city: 'Madrid', province: 'Madrid' }
+      })
+      if (r.ok) fillIds(r)
+      show('cliRes', r)
+    }
+
+    async function doListClients() {
+      show('cliRes', await api('GET', '/client?page=1&limit=10'))
+    }
+
+    // Projects
+
+    async function doCreateProject() {
+      const r = await api('POST', '/project', {
+        name: document.getElementById('projName').value,
+        projectCode: document.getElementById('projCode').value,
+        client: document.getElementById('projClientId').value,
+        address: { street: 'Gran Vía', number: '1', postal: '28013', city: document.getElementById('projCity').value, province: 'Madrid' },
+        email: 'obra@garcia.com',
+        active: true
+      })
+      if (r.ok) fillIds(r)
+      show('projRes', r)
+    }
+
+    async function doListProjects() {
+      show('projRes', await api('GET', '/project?page=1&limit=10'))
+    }
+
+    // Delivery Notes
+
+    function toggleFormat() {
+      const fmt = document.getElementById('nFormat').value
+      document.getElementById('hoursFields').style.display = fmt === 'hours' ? '' : 'none'
+      document.getElementById('matFields').style.display = fmt === 'material' ? '' : 'none'
+    }
+
+    async function doCreateNote() {
+      const fmt = document.getElementById('nFormat').value
+      const body = {
+        client: document.getElementById('nCliId').value,
+        project: document.getElementById('nProjId').value,
+        format: fmt,
+        description: document.getElementById('nDesc').value,
+        workDate: document.getElementById('nDate').value
+      }
+      if (fmt === 'hours') {
+        try { body.workers = JSON.parse(document.getElementById('nWorkers').value) }
+        catch { body.hours = 8 }
+      } else {
+        body.material = document.getElementById('nMat').value
+        body.quantity = Number(document.getElementById('nQty').value)
+        body.unit = document.getElementById('nUnit').value
+      }
+      const r = await api('POST', '/deliverynote', body)
+      if (r.ok) fillIds(r)
+      show('noteRes', r)
+    }
+
+    async function doListNotes() {
+      show('noteRes', await api('GET', '/deliverynote?page=1&limit=10'))
+    }
+
+    async function doSignNote() {
+      const id = document.getElementById('noteId').value.trim()
+      const file = document.getElementById('sigFile').files[0]
+      if (!id) { alert('Note ID is required'); return }
+      if (!file) { alert('Select a signature image first'); return }
+
+      const fd = new FormData()
+      fd.append('signature', file)
+
+      try {
+        const res = await fetch(`${BASE()}/deliverynote/${id}/sign`, {
+          method: 'PATCH',
+          headers: TOKEN() ? { Authorization: `Bearer ${TOKEN()}` } : {},
+          body: fd
+        })
+        const data = await res.json().catch(() => ({}))
+        show('noteRes', { ok: res.ok, data })
+      } catch (err) {
+        show('noteRes', { ok: false, data: { message: err.message } })
+      }
+    }
+
+    async function doGetPdf() {
+      const id = document.getElementById('noteId').value.trim()
+      if (!id) { alert('Note ID is required'); return }
+
+      try {
+        const res = await fetch(`${BASE()}/deliverynote/pdf/${id}`, {
+          headers: TOKEN() ? { Authorization: `Bearer ${TOKEN()}` } : {}
+        })
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}))
+          show('noteRes', { ok: false, data })
+          return
+        }
+        const blob = await res.blob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `delivery-note-${id}.pdf`
+        a.click()
+        URL.revokeObjectURL(url)
+      } catch (err) {
+        show('noteRes', { ok: false, data: { message: err.message } })
+      }
+    }
+
+    // Socket status UI
+
+    const STATE_CLS = {
+      connected: 'dot-connected',
+      disconnected: 'dot-disconnected',
+      error: 'dot-error',
+      connecting: 'dot-connecting'
+    }
+
+    function setStatus(state, text, room) {
+      for (const id of ['cfgDot', 'logDot', 'hDot']) {
+        const el = document.getElementById(id)
+        el.className = `status-dot ${STATE_CLS[state] || 'dot-connecting'}`
+      }
+      document.getElementById('logStatus').textContent = text
+      document.getElementById('hStatus').textContent = text
+      if (room !== undefined) {
+        document.getElementById('hRoom').textContent = room ? `Room: ${room}` : ''
+      }
+    }
+
+    //    Event log
+
+    const LOG_CLS = {
+      'connect': 'log-connect',
+      'disconnect': 'log-disconnect',
+      'connect_error': 'log-error',
+      'notifications:connected': 'log-info',
+      'client:new': 'log-client',
+      'project:new': 'log-project',
+      'deliverynote:new': 'log-note',
+      'deliverynote:signed': 'log-signed'
+    }
+
+    function addLog(event, payload) {
+      const body = document.getElementById('logBody')
+      const empty = document.getElementById('logEmpty')
+      if (empty) empty.remove()
+
+      const entry = document.createElement('div')
+      entry.className = `log-entry ${LOG_CLS[event] || ''}`
+      entry.innerHTML =
+        `<div><span class="log-name">${event}</span>` +
+        `<span class="log-time">${new Date().toLocaleTimeString()}</span></div>` +
+        `<pre class="log-pre">${JSON.stringify(payload, null, 2)}</pre>`
+      body.prepend(entry)
+    }
+
+    function clearLog() {
+      document.getElementById('logBody').innerHTML =
+        '<div class="log-empty" id="logEmpty">Log cleared.</div>'
+    }
+
+    // Socket.IO
+
+    let socket = null
+
+    function reconnectSocket() {
+      if (socket) { socket.disconnect(); socket = null }
+
+      setStatus('connecting', 'Connecting...')
+
+      socket = io(SERVER(), {
+        auth: { token: TOKEN() },
+        transports: ['websocket', 'polling']
+      })
+
+      socket.on('connect', () => {
+        setStatus('connected', `Connected (${socket.id.slice(0, 8)}...)`)
+        addLog('connect', { socketId: socket.id })
+      })
+
+      socket.on('notifications:connected', data => {
+        setStatus('connected', `Connected (${socket.id.slice(0, 8)}...)`, data.room)
+        addLog('notifications:connected', data)
+      })
+
+      socket.on('client:new', data => addLog('client:new', data))
+      socket.on('project:new', data => addLog('project:new', data))
+      socket.on('deliverynote:new', data => addLog('deliverynote:new', data))
+      socket.on('deliverynote:signed', data => addLog('deliverynote:signed', data))
+
+      socket.on('disconnect', reason => {
+        setStatus('disconnected', `Disconnected`)
+        addLog('disconnect', { reason })
+      })
+
+      socket.on('connect_error', err => {
+        setStatus('error', `Error: ${err.message}`)
+        addLog('connect_error', { message: err.message })
+      })
+    }
+
+    document.getElementById('clientId').addEventListener('input', function () {
+      document.getElementById('projClientId').value = this.value
+      document.getElementById('nCliId').value = this.value
+    })
+    document.getElementById('projectId').addEventListener('input', function () {
+      document.getElementById('nProjId').value = this.value
+    })
+
+    document.getElementById('nDate').value = new Date().toISOString().slice(0, 10)
+
+    reconnectSocket()
+  </script>
+</body>
+
+</html>
