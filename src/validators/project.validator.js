@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { addressSchema, emailField } from './shared/fields.js'
-import { listQuerySchema, objectIdField, booleanCoerce } from './shared/query.js'
+import { booleanCoerce, listQuerySchema, objectIdField } from './shared/query.js'
 
 export const createProjectSchema = z.object({
   name: z.string().trim().min(1, 'Project name is required'),

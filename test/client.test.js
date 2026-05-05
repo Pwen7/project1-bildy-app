@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals'
 import request from 'supertest'
 import app from '../src/app.js'
-import { connect, closeDatabase, clearDatabase } from './setup.js'
+import { clearDatabase, closeDatabase, connect } from './setup.js'
 
 jest.mock('../src/services/mail.service.js', () => ({
   sendVerificationEmail: jest.fn().mockResolvedValue({ messageId: 'test-mock' })

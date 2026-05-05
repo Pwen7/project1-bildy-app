@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals'
 import { generateDeliveryNotePDF } from '../src/services/pdf.service.js'
 
 const NOTE_FIXTURE = {

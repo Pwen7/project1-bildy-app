@@ -1,15 +1,5 @@
 import { Router } from 'express'
 import {
-  changePasswordSchema,
-  inviteSchema,
-  loginSchema,
-  personalDataSchema,
-  refreshSchema,
-  registerSchema,
-  verificationSchema
-} from '../validators/user.validator.js'
-import { companySchema } from '../validators/company.validator.js'
-import {
   changePassword,
   deleteUser,
   getUser,
@@ -24,9 +14,19 @@ import {
   verifyEmail
 } from '../controllers/user.controller.js'
 import authMiddleware from '../middlewares/auth.middleware.js'
-import validate from '../middlewares/validate.middleware.js'
-import upload from '../middlewares/upload.middleware.js'
 import checkRole from '../middlewares/role.middleware.js'
+import upload from '../middlewares/upload.middleware.js'
+import validate from '../middlewares/validate.middleware.js'
+import { companySchema } from '../validators/company.validator.js'
+import {
+  changePasswordSchema,
+  inviteSchema,
+  loginSchema,
+  personalDataSchema,
+  refreshSchema,
+  registerSchema,
+  verificationSchema
+} from '../validators/user.validator.js'
 
 const router = Router()
 

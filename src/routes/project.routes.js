@@ -1,7 +1,4 @@
 import { Router } from 'express'
-import authMiddleware from '../middlewares/auth.middleware.js'
-import validate from '../middlewares/validate.middleware.js'
-import { createProjectSchema, projectSchema, projectListQuerySchema } from '../validators/project.validator.js'
 import {
   createProject,
   deleteProject,
@@ -11,6 +8,9 @@ import {
   restoreProject,
   updateProject
 } from '../controllers/project.controller.js'
+import authMiddleware from '../middlewares/auth.middleware.js'
+import validate from '../middlewares/validate.middleware.js'
+import { createProjectSchema, projectListQuerySchema, projectSchema } from '../validators/project.validator.js'
 
 const router = Router()
 

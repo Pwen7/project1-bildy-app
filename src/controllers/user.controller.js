@@ -1,10 +1,10 @@
-import { generateAccessToken, generateRefreshToken } from '../utils/jwt.util.js'
-import User from '../models/User.js'
 import Company from '../models/Company.js'
-import AppError from '../utils/AppError.js'
-import { hashPassword, comparePassword } from '../utils/password.util.js'
+import User from '../models/User.js'
 import { sendVerificationEmail } from '../services/mail.service.js'
 import { uploadToCloud } from '../services/storage.service.js'
+import AppError from '../utils/AppError.js'
+import { generateAccessToken, generateRefreshToken } from '../utils/jwt.util.js'
+import { comparePassword, hashPassword } from '../utils/password.util.js'
 
 const generateVerificationCode = () => String(Math.floor(100000 + Math.random() * 900000))
 

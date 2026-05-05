@@ -1,7 +1,7 @@
 import { Server } from 'socket.io'
-import { verifyAccessToken } from '../utils/jwt.util.js'
 import User from '../models/User.js'
 import AppError from '../utils/AppError.js'
+import { verifyAccessToken } from '../utils/jwt.util.js'
 
 let io
 

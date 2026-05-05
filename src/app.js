@@ -1,16 +1,16 @@
+import cors from 'cors'
 import express from 'express'
+import mongoSanitize from 'express-mongo-sanitize'
+import rateLimit from 'express-rate-limit'
+import helmet from 'helmet'
 import { createServer } from 'http'
+import mongoose from 'mongoose'
 import swaggerUi from 'swagger-ui-express'
 import swaggerSpecs from './config/swagger.config.js'
-import routes from './routes/index.js'
 import { errorHandler, notFound } from './middlewares/error.middleware.js'
 import { logger } from './middlewares/logger.middleware.js'
+import routes from './routes/index.js'
 import { initSocket } from './services/socket.service.js'
-import mongoose from 'mongoose'
-import helmet from 'helmet'
-import rateLimit from 'express-rate-limit'
-import mongoSanitize from 'express-mongo-sanitize'
-import cors from 'cors'
 
 const app = express()
 export const httpServer = createServer(app)

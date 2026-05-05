@@ -1,6 +1,6 @@
+import User from '../models/User.js'
 import AppError from '../utils/AppError.js'
 import { verifyAccessToken } from '../utils/jwt.util.js'
-import User from '../models/User.js'
 
 /* Extracts token Bearer from the Authorization header, verifies it,
 and appends the full user to req.user for the following handlers */
