@@ -36,16 +36,16 @@ export const initSocket = (httpServer) => {
   io.on('connection', (socket) => {
     const { user } = socket
 
-    if (user) {
+    if (user?.company) {
       socket.join(user.company.toString())
       console.log(`🔌 [Socket] ${user.email} joined room ${user.company}`)
+    } else {
+      console.log(`🔌 [Socket] ${user.email} connected (no company yet)`)
     }
 
     socket.on('disconnect', () => {
-      console.log(`🔌 [Socket] ${user.email} disconnected`)
+      console.log(`🔌 [Socket] ${user?.email} disconnected`)
     })
-
-    return io
   })
 }
 

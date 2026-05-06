@@ -1,6 +1,6 @@
 @base           = http://localhost:3000/api
-@token          = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWY4NmQxMWY2NWE3NWE0N2YwNWU0YjYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3Nzc5OTY4MTQsImV4cCI6MTc3ODAwNDAxNH0.R41Ebuz-mUTyhm01la8Pm9vdM9JXXlMU2tdPYb2dwKM
-@refreshToken   = 509053331da7620e4a3077df7da3e4d09d936b1d1f3e799138b73c25dfca8c13c19d3e08f9808dd24a8772b7bd5aa82552b2a17fbbbdf169818009bb0b8536fd
+@token          = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWZiNjU3NzdkNWJmNDE3NWE0N2NlMTIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzgwODMxOTEsImV4cCI6MTc3ODA5MDM5MX0.KW2UoXVgPKtLWLhET_UtbEaF2kVoawJ4czIMzJxQvow
+@refreshToken   = 2621a0a8cef6893b3b0cf471fa5808f595c49fa98fa31983d031e9208f9d7fa2c4cd661ade6d7c887321adbee0df8f4ea69019b9576ef928b261fcc053159550
 @clientId       = 69f8745a58c89e3b987543aa
 @projectId      = 69f874d258c89e3b987543ba
 @noteId         = 69f8751758c89e3b987543da
@@ -8,7 +8,7 @@
 @guestEmail     = guest@bildyapp.com
 @guestPassword  = Password123
 
-@verifyCode     = 425732
+@verifyCode     = 272369
 
 
 ### Health check
